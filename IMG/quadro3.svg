@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 800 600"
+   height="600mm"
+   width="800mm">
+  <defs
+     id="defs2" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,303)"
+     id="layer1">
+    <flowRoot
+       transform="matrix(0.26458333,0,0,0.26458333,0,-303)"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.33333206px;line-height:1.25;font-family:Quattrocento;-inkscape-font-specification:Quattrocento;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       id="flowRoot4532"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4534"><rect
+           y="2148.4309"
+           x="108.57144"
+           height="130.71428"
+           width="515.71429"
+           id="rect4536" /></flowRegion><flowPara
+         style="font-weight:bold;font-size:82.66667175px"
+         id="flowPara4538" /></flowRoot>    <path
+       id="path4578"
+       d="M 176.39789,289.78371 H 791.51871 V -294.6011 H 8.41899 v 584.2512 h 20.579753"
+       style="fill:none;stroke:#34a5f4;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1" />
+    <flowRoot
+       style="fill:black;fill-opacity:1;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;letter-spacing:0px;word-spacing:0px"
+       id="flowRoot826"
+       xml:space="preserve"><flowRegion
+         id="flowRegion828"><rect
+           y="2169.145"
+           x="122.85714"
+           height="71.297264"
+           width="543.84357"
+           id="rect830" /></flowRegion><flowPara
+         id="flowPara832" /></flowRoot>    <text
+       id="text833"
+       y="290.86682"
+       x="47.624775"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.26458332;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.26458332"
+         id="tspan831"
+         y="290.86682"
+         x="47.624775"><tspan
+           style="stroke-width:0.26458332"
+           id="tspan829"
+           y="290.86682"
+           x="47.624775">Extensão Unicamp</tspan></tspan></text>
+    <flowRoot
+       style="fill:black;fill-opacity:1;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;letter-spacing:0px;word-spacing:0px"
+       id="flowRoot842"
+       xml:space="preserve"><flowRegion
+         id="flowRegion844"><rect
+           y="2162.0022"
+           x="101.42857"
+           height="60"
+           width="422.85715"
+           id="rect846" /></flowRegion><flowPara
+         id="flowPara848" /></flowRoot>  </g>
+</svg>
