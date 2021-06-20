@@ -63,13 +63,13 @@ csss508css <- list(
                            "background-size" = "contain, contain")
     )
 
-mono_accent(base_color = "#342c5c",
+mono_accent(base_color = "#34a5f4ff",
             code_font_google = google_font("Fira Mono"),
             header_font_google = google_font("Quattrocento"),
             extra_css = csss508css,
             title_slide_background_position = "bottom",
             title_slide_background_size = "contain",
-            background_image = "https://clanfear.github.io/Intermediate_R_Workshop/img/UWTacomaBG1.svg"
+            background_image = "https://raw.githubusercontent.com/arthurwelle/Introducao_R/d8bd652fcf4d34262715905bdc7f133cdf8dd2c6/IMG/quadro3.svg"
 )
 ```
 

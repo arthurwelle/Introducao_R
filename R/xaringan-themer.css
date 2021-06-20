@@ -44,20 +44,20 @@
 
   /* Colors */
   --text-color: #272822;
-  --header-color: #342c5c;
+  --header-color: #34a5f4ff;
   --background-color: #FFFFFF;
-  --link-color: #342c5c;
-  --text-bold-color: #342c5c;
+  --link-color: #34a5f4ff;
+  --text-bold-color: #34a5f4ff;
   --code-highlight-color: rgba(255,255,0,0.5);
   --inverse-text-color: #FFFFFF;
-  --inverse-background-color: #342c5c;
+  --inverse-background-color: #34a5f4ff;
   --inverse-header-color: #FFFFFF;
-  --inverse-link-color: #342c5c;
-  --title-slide-background-color: #342c5c;
+  --inverse-link-color: #34a5f4ff;
+  --title-slide-background-color: #34a5f4ff;
   --title-slide-text-color: #FFFFFF;
-  --header-background-color: #342c5c;
+  --header-background-color: #34a5f4ff;
   --header-background-text-color: #FFFFFF;
-  --base: #342c5c;
+  --base: #34a5f4ff;
   --white: #FFFFFF;
   --black: #272822;
 }
@@ -79,7 +79,7 @@ h1, h2, h3 {
 .remark-slide-content {
   background-color: var(--background-color);
   font-size: 1rem;
-  background-image: url(https://clanfear.github.io/Intermediate_R_Workshop/img/UWTacomaBG1.svg);
+  background-image: url(https://raw.githubusercontent.com/arthurwelle/Introducao_R/d8bd652fcf4d34262715905bdc7f133cdf8dd2c6/IMG/quadro3.svg);
   background-size: cover;
   padding: 16px 64px 16px 64px;
   width: 100%;
@@ -102,10 +102,10 @@ h1, h2, h3 {
 }
 .remark-inline-code {
   font-size: var(--code-inline-font-size);
-  color: #342c5c;
+  color: #34a5f4ff;
 }
 .remark-slide-number {
-  color: #342c5c;
+  color: #34a5f4ff;
   opacity: 1;
   font-size: 0.9em;
 }
@@ -152,10 +152,10 @@ a, a > code {
   float: left;
 }
 .left-column h2, .left-column h3 {
-  color: #342c5c99;
+  color: #34a5f4ff99;
 }
 .left-column h2:last-of-type, .left-column h3:last-child {
-  color: #342c5c;
+  color: #34a5f4ff;
 }
 .right-column {
   width: 75%;
@@ -177,7 +177,7 @@ img, video, iframe {
   max-width: 100%;
 }
 blockquote {
-  border-left: solid 5px #342c5c80;
+  border-left: solid 5px #34a5f4ff80;
   padding-left: 1em;
 }
 .remark-slide table {
@@ -192,7 +192,7 @@ th, td {
   padding: 5px;
 }
 .remark-slide thead, .remark-slide tfoot, .remark-slide tr:nth-child(even) {
-  background: #D6D4DE;
+  background: #D6EDFC;
 }
 table.dataTable tbody {
   background-color: var(--background-color);
@@ -202,7 +202,7 @@ table.dataTable.display tbody tr.odd {
   background-color: var(--background-color);
 }
 table.dataTable.display tbody tr.even {
-  background-color: #D6D4DE;
+  background-color: #D6EDFC;
 }
 table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.5);
