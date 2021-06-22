@@ -229,7 +229,7 @@ class: inverse
 
 ---
 
-# Os quatro principais "verbos" do dplyr:
+### Os quatro principais "verbos" do dplyr:
 
 ### `filter()` 
 
@@ -239,7 +239,7 @@ class: inverse
 
 ### `summarize()`
 
-uma "preposição":
+e uma "preposição":
 
 ### `group_by()`
 
@@ -298,7 +298,7 @@ Operadores usados para combinar outros
 
 ---
 
-# Exemplo de multiplas condições
+## Exemplo de multiplas condições
 
 Vamos filtrar a base para manter somente Oman entre 1980 e 2000.
 
@@ -326,10 +326,8 @@ lista_paises_Mercosul <- c(
 
 # cria nova base com países que estão na lista acima
 mercosul <- gapminder %>%
-  filter(country %in% lista_paises_Mercosul)
-
-# mostra resultado
-mercosul
+  filter(country %in% lista_paises_Mercosul) %>% 
+  head(4)
 ```
 
 
@@ -397,7 +395,7 @@ mercosul %>%
 ```
 
 ---
-### Renomeando colunas com `rename()`
+## Renomeando colunas com `rename()`
 
 
 **`rename()`** renomeia colunas com a mesma sintaxe que `select()` sem remover colunas não mencionadas.
@@ -530,7 +528,7 @@ Funções depois de um `group_by()` são calculadas **dentro de cada groupo** de
 Geralmente as variaveis que você usará como grupo serão inteiros, factores, ou characteres, e *não variáveis continuas*.
 
 ---
-`group_by()` example
+# `group_by()` example
 
 
 ```{r}
@@ -569,7 +567,7 @@ class: inverse
 # *Tidying*  ou arrumação
 
 ---
-# Recordando importação de dados
+## Recordando importação de dados
 
 .smallish[
 Lista de coisas a checar quando importamos dados para o R:
@@ -604,13 +602,13 @@ Lista de coisas a checar quando importamos dados para o R:
 ]
 
 ---
-# Recordando importação de dados
+## Recordando importação de dados
 
 .smallish[
 
 * As classes de cada uma das variáveis estão corretas? Pode ocorrer que números estão como texto, por exemplo.
 
-    + Modifique a classe na leitura com o argumento `col_types=`, ou use `mutate()` e uma das funções `as.`
+    + Modifique a classe na importação dos dados com o argumento `col_types=`, ou use `mutate()` e uma das funções `as.`...
     
         + `as.numeric()`;
         
@@ -618,7 +616,7 @@ Lista de coisas a checar quando importamos dados para o R:
         
         + `as.factor)`;
         
-        +`as.Date()`...
+        + `as.Date()`...
 ]
 
 
@@ -683,41 +681,44 @@ Vantagens:
 ---
 # `tidyr`
 
-The `tidyr` package provides functions to tidy up data, similar to `reshape` in Stata or `varstocases` in SPSS. Key functions:
+O pacote`tidyr` também do tidyverse traz funções para arrumar os dados na forma tidy. Vejamos duas funções centrais:
 
 --
 
-* **`gather()`**: takes a set of columns and rotates them down to make two new columns (which you can name yourself): 
-    * A `key` that stores the original column names
-    * A `value` with the values in those original columns
+* **`pivot_longer()`**: pega um conjunto de colunas e rotaciona para fazer duas novas columas (que você pode nomear): 
+    * Uma chave `key` que vai guardar os nomes originais das variáveis.
+    * Um valor (`value`) indicando os valores a serem utilizados para preencher as células.
+
 
 --
 
-* **`spread()`**: inverts `gather()` by taking two columns and rotating them up into multiple columns
-
---
-
-* **`separate()`**: pulls apart one column into multiple columns (common with `gather`ed data where values had been embedded in column names)
-    * `extract_numeric()` does a simple version of this for the common case when you just want grab the number part
-
---
-
-* **`extract()`** for spreading a column into multiple *sets* of columns.
-   * See [Hadley's response to this question](https://stackoverflow.com/questions/25925556/gather-multiple-sets-of-columns) for an example.
+* **`pivot_wider()`**: inverso do `pivot_longer()` pega conteudo de duas colunas e a tranforma em multiplas colunas.
 
 ---
-# `gather()`
 
-Let's use `gather()` to get the week and rank variables out of their current layout into two columns (big increase in rows, big drop in columns):
+![image](IMG/original-dfs-tidy.png)
 
-```{r, message=FALSE, warning=FALSE}
-library(tidyr)
+---
 
+
+```{r}
+remotes::install_github("cienciadedatos/dados")
+pixarfilms::academy
+nasaweather::glaciers
+palmerpenguins::penguins_raw
+fueleconomy::common
+babynames::births
+
+dados::tabela4a
 ```
 
-`starts_with()` and other helper functions from `dplyr::select()` work here too.
 
-We could instead use: `gather(key = week, value = rank, wk1:wk76)` to pull out these contiguous columns.
+
+
+
+
+
+
 
 
 ---

@@ -14,7 +14,7 @@ class: center, top, title-slide
 # Data Science em Gestão de Negócios e Finanças
 ## <br>Introdução ao Tidyverse 1
 ### Arthur Welle
-### 21 jun, 2021
+### 22 jun, 2021
 
 ---
 
@@ -261,7 +261,7 @@ class: inverse
 
 ---
 
-# Os quatro principais "verbos" do dplyr:
+### Os quatro principais "verbos" do dplyr:
 
 ### `filter()` 
 
@@ -271,7 +271,7 @@ class: inverse
 
 ### `summarize()`
 
-uma "preposição":
+e uma "preposição":
 
 ### `group_by()`
 
@@ -345,7 +345,7 @@ Operadores usados para combinar outros
 
 ---
 
-# Exemplo de multiplas condições
+## Exemplo de multiplas condições
 
 Vamos filtrar a base para manter somente Oman entre 1980 e 2000.
 
@@ -385,27 +385,8 @@ lista_paises_Mercosul &lt;- c(
 
 # cria nova base com países que estão na lista acima
 mercosul &lt;- gapminder %&gt;%
-  filter(country %in% lista_paises_Mercosul)
-
-# mostra resultado
-mercosul
-```
-
-```
-## # A tibble: 36 x 6
-##    country   continent  year lifeExp      pop gdpPercap
-##    &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
-##  1 Argentina Americas   1952    62.5 17876956     5911.
-##  2 Argentina Americas   1957    64.4 19610538     6857.
-##  3 Argentina Americas   1962    65.1 21283783     7133.
-##  4 Argentina Americas   1967    65.6 22934225     8053.
-##  5 Argentina Americas   1972    67.1 24779799     9443.
-##  6 Argentina Americas   1977    68.5 26983828    10079.
-##  7 Argentina Americas   1982    69.9 29341374     8998.
-##  8 Argentina Americas   1987    70.8 31620918     9140.
-##  9 Argentina Americas   1992    71.9 33958947     9308.
-## 10 Argentina Americas   1997    73.3 36203463    10967.
-## # … with 26 more rows
+  filter(country %in% lista_paises_Mercosul) %&gt;% 
+  head(4)
 ```
 
 
@@ -421,20 +402,13 @@ mercosul %&gt;%
 ```
 
 ```
-## # A tibble: 36 x 6
-##    country   continent  year lifeExp      pop gdpPercap
-##    &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
-##  1 Brazil    Americas   1952    50.9 56602560     2109.
-##  2 Argentina Americas   1952    62.5 17876956     5911.
-##  3 Uruguay   Americas   1952    66.1  2252965     5717.
-##  4 Brazil    Americas   1957    53.3 65551171     2487.
-##  5 Argentina Americas   1957    64.4 19610538     6857.
-##  6 Uruguay   Americas   1957    67.0  2424959     6151.
-##  7 Brazil    Americas   1962    55.7 76039390     3337.
-##  8 Argentina Americas   1962    65.1 21283783     7133.
-##  9 Uruguay   Americas   1962    68.3  2598466     5603.
-## 10 Brazil    Americas   1967    57.6 88049823     3430.
-## # … with 26 more rows
+## # A tibble: 4 x 6
+##   country   continent  year lifeExp      pop gdpPercap
+##   &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+## 1 Argentina Americas   1952    62.5 17876956     5911.
+## 2 Argentina Americas   1957    64.4 19610538     6857.
+## 3 Argentina Americas   1962    65.1 21283783     7133.
+## 4 Argentina Americas   1967    65.6 22934225     8053.
 ```
 
 Ordenados ascendentemente por `year` e descendentemente por `pop`.
@@ -535,7 +509,7 @@ mercosul %&gt;%
 ```
 
 ---
-### Renomeando colunas com `rename()`
+## Renomeando colunas com `rename()`
 
 
 **`rename()`** renomeia colunas com a mesma sintaxe que `select()` sem remover colunas não mencionadas.
@@ -578,14 +552,9 @@ mercosul %&gt;% filter(country == "Brazil") %&gt;%
 ```
 
 ```
-## # A tibble: 5 x 6
-##   country  year       pop gdpPercap pop_million           GDP
-##   &lt;fct&gt;   &lt;int&gt;     &lt;int&gt;     &lt;dbl&gt;       &lt;dbl&gt;         &lt;dbl&gt;
-## 1 Brazil   1952  56602560     2109.        56.6 119371649391.
-## 2 Brazil   1957  65551171     2487.        65.6 163049753285.
-## 3 Brazil   1962  76039390     3337.        76.0 253711949067.
-## 4 Brazil   1967  88049823     3430.        88.0 301998949548.
-## 5 Brazil   1972 100840058     4986.       101.  502759433504.
+## # A tibble: 0 x 6
+## # … with 6 variables: country &lt;fct&gt;, year &lt;int&gt;, pop &lt;int&gt;, gdpPercap &lt;dbl&gt;,
+## #   pop_million &lt;dbl&gt;, GDP &lt;dbl&gt;
 ```
 
 .footnote[Veja que podemos criar mais de uma variável no mesmo `mutate()` separando cada uma por uma vírgula.]
@@ -643,9 +612,9 @@ mercosul %&gt;%
 ## # A tibble: 3 x 4
 ##   country   apelido   year      pop
 ##   &lt;fct&gt;     &lt;chr&gt;    &lt;int&gt;    &lt;int&gt;
-## 1 Brazil    Brazil    1952 56602560
-## 2 Argentina Hermanos  1952 17876956
-## 3 Uruguay   Uruguay   1952  2252965
+## 1 Argentina Hermanos  1952 17876956
+## 2 Argentina Hermanos  1957 19610538
+## 3 Argentina Hermanos  1962 21283783
 ```
 
 Em português leia-se "para cada linha, se o país é igual à "Argentina" então faça a nova variável `apelido` ganhar o texto "**Hermanos**", caso contrário o valor da variável `country`. É uma maneira fácil de mudar alguns valores e não outros.
@@ -711,10 +680,18 @@ mercosul %&gt;%
 ```
 
 ```
+## Warning in max(lifeExp): no non-missing arguments to max; returning -Inf
+```
+
+```
+## Warning in min(lifeExp): no non-missing arguments to min; returning Inf
+```
+
+```
 ## # A tibble: 1 x 4
 ##   n_obs total_pop med_exp_vida intervalo_exp_vida
 ##   &lt;int&gt;     &lt;int&gt;        &lt;dbl&gt;              &lt;dbl&gt;
-## 1     3 233760070         74.7               3.99
+## 1     0         0          NaN               -Inf
 ```
 
 As novas variáveis criadas como resultado usaram *todas as linhas* dos dados de `mercosul`.
@@ -730,7 +707,7 @@ Funções depois de um `group_by()` são calculadas **dentro de cada groupo** de
 Geralmente as variaveis que você usará como grupo serão inteiros, factores, ou characteres, e *não variáveis continuas*.
 
 ---
-`group_by()` example
+# `group_by()` example
 
 
 
@@ -744,14 +721,13 @@ mercosul %&gt;%
 ```
 
 ```
-## # A tibble: 5 x 4
+## # A tibble: 4 x 4
 ##    year num_paises total_pop total_pib_per_cap
 ##   &lt;int&gt;      &lt;int&gt;     &lt;int&gt;             &lt;dbl&gt;
-## 1  1952          3  76732481             3101.
-## 2  1957          3  87586668             3567.
-## 3  1962          3  99921639             4204.
-## 4  1967          3 113732627             4411.
-## 5  1972          3 128449383             5861.
+## 1  1952          1  17876956             5911.
+## 2  1957          1  19610538             6857.
+## 3  1962          1  21283783             7133.
+## 4  1967          1  22934225             8053.
 ```
 
 Como usamos `group_by()` com `year` e depois o `summarize()`, nós obtivemos *uma linha por valor identificador do grupo, isto é, por ano*!
@@ -761,7 +737,7 @@ Cada valor distinto da variável ano é seu próprio **grupo**!
 ---
 ## Funções de janela
 
-Agrupamentos também podem ser usados junto com `mutate()` ou `filter()` para dar ordem dentro de cada grupo, para dar valores anteriores ou posteriores, ou ainda retornar a soma acumulada. Mais informações sobre isso [aqui](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html).
+Agrupamentos também podem ser usados junto com `mutate()` ou `filter()` para dar ordem dentro de cada grupo, para dar valores anteriores ou posteriores, ou ainda retornar a soma acumulada. Mais informações sobre [aqui](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html).
 
 .small[
 
@@ -777,13 +753,10 @@ mercosul %&gt;%
 ```
 
 ```
-## # A tibble: 3 x 6
-## # Groups:   country [3]
-##   country    year       pop   lag_pop var_pop_02_07 var_percentual_02_07
-##   &lt;fct&gt;     &lt;int&gt;     &lt;int&gt;     &lt;int&gt;         &lt;int&gt;                &lt;dbl&gt;
-## 1 Argentina  2007  40301927  38331121       1970806                 5.14
-## 2 Brazil     2007 190010647 179914212      10096435                 5.61
-## 3 Uruguay    2007   3447496   3363085         84411                 2.51
+## # A tibble: 0 x 6
+## # Groups:   country [0]
+## # … with 6 variables: country &lt;fct&gt;, year &lt;int&gt;, pop &lt;int&gt;, lag_pop &lt;int&gt;,
+## #   var_pop_02_07 &lt;int&gt;, var_percentual_02_07 &lt;dbl&gt;
 ```
 ]
 
@@ -792,7 +765,7 @@ class: inverse
 # *Tidying*  ou arrumação
 
 ---
-# Recordando importação de dados
+## Recordando importação de dados
 
 .smallish[
 Lista de coisas a checar quando importamos dados para o R:
@@ -827,13 +800,13 @@ Lista de coisas a checar quando importamos dados para o R:
 ]
 
 ---
-# Recordando importação de dados
+## Recordando importação de dados
 
 .smallish[
 
 * As classes de cada uma das variáveis estão corretas? Pode ocorrer que números estão como texto, por exemplo.
 
-    + Modifique a classe na leitura com o argumento `col_types=`, ou use `mutate()` e uma das funções `as.`
+    + Modifique a classe na importação dos dados com o argumento `col_types=`, ou use `mutate()` e uma das funções `as.`...
     
         + `as.numeric()`;
         
@@ -841,7 +814,7 @@ Lista de coisas a checar quando importamos dados para o R:
         
         + `as.factor)`;
         
-        +`as.Date()`...
+        + `as.Date()`...
 ]
 
 
@@ -906,41 +879,34 @@ Vantagens:
 ---
 # `tidyr`
 
-The `tidyr` package provides functions to tidy up data, similar to `reshape` in Stata or `varstocases` in SPSS. Key functions:
+O pacote`tidyr` também do tidyverse traz funções para arrumar os dados na forma tidy. Vejamos duas funções centrais:
 
 --
 
-* **`gather()`**: takes a set of columns and rotates them down to make two new columns (which you can name yourself): 
-    * A `key` that stores the original column names
-    * A `value` with the values in those original columns
+* **`pivot_longer()`**: pega um conjunto de colunas e rotaciona para fazer duas novas columas (que você pode nomear): 
+    * Uma chave `key` que vai guardar os nomes originais das variáveis.
+    * Um valor (`value`) indicando os valores a serem utilizados para preencher as células.
+
 
 --
 
-* **`spread()`**: inverts `gather()` by taking two columns and rotating them up into multiple columns
-
---
-
-* **`separate()`**: pulls apart one column into multiple columns (common with `gather`ed data where values had been embedded in column names)
-    * `extract_numeric()` does a simple version of this for the common case when you just want grab the number part
-
---
-
-* **`extract()`** for spreading a column into multiple *sets* of columns.
-   * See [Hadley's response to this question](https://stackoverflow.com/questions/25925556/gather-multiple-sets-of-columns) for an example.
+* **`pivot_wider()`**: inverso do `pivot_longer()` pega conteudo de duas colunas e a tranforma em multiplas colunas.
 
 ---
-# `gather()`
 
-Let's use `gather()` to get the week and rank variables out of their current layout into two columns (big increase in rows, big drop in columns):
+![image](IMG/original-dfs-tidy.png)
+
+---
+
+![image](IMG/tidyr-longer-wider.gif)
 
 
-```r
-library(tidyr)
-```
 
-`starts_with()` and other helper functions from `dplyr::select()` work here too.
 
-We could instead use: `gather(key = week, value = rank, wk1:wk76)` to pull out these contiguous columns.
+
+
+
+
 
 
 ---
