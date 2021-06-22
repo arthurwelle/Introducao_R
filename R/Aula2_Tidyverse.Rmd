@@ -1,12 +1,12 @@
 ---
-title: "Intermediate R"
-subtitle: "UW Tacoma"  
-author: "Charles Lanfear"
-date: "May 4, 2019<br>Updated: `r gsub(' 0', ' ', format(Sys.Date(), format='%b %d, %Y'))`"
+title: "Data Science em Gestão de Negócios e Finanças"
+subtitle: "<br>Introdução ao Tidyverse 1"  
+author: "Arthur Welle"
+date: "`r gsub(' 0', ' ', format(Sys.Date(), format='%d %b, %Y'))`"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: xaringan-themer.css
+    css: ["custom.css"] 
     nature:
       highlightStyle: tomorrow-night-bright
       highlightLines: true
@@ -16,99 +16,45 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-
+library(tidyverse)
+library(gapminder)
 ```
 
-```{r xaringan-themer, include=FALSE}
-library(xaringanthemer)
+# Índice
 
-csss508css <- list(
-     ".hljs-tomorrow-night-bright .hljs" = list(
-        "background" = "#10102c",
-        "border-radius"="4px"),
-     ".remark-inline-code" = list(
-        "background" = "#E0E0E0",
-        "color" = "#10102c",
-        "border-radius" = "3px",
-        "padding" = "2px"),
-     ".inverse .remark-inline-code" = list(
-        "background" = "#10102c",
-        "color" = "#ececf8",
-        "border-radius" = "3px",
-        "padding" = "2px"),
-     ".smallish" = list("font-size" = "85%"),
-     ".small" = list("font-size" = "75%"),
-     ".smaller" = list("font-size" = "60%"),
-     ".remark-code-line-highlighted" = list(
-        "background-color" = "rgba(255,0,255,0.2)"),
-     "sup" = list("font-size" = "14px"),
-     "h1, h2, h3" = list(
-        "margin-top"=".25em", 
-        "margin-bottom"=".25em"),
-     ".pull-left60" = list(
-        "float" = "left",
-        "width" = "58%" ),
-     ".pull-right40" = list(
-        "float" = "right",
-        "width" = "38%" ),
-     ".pull-right30" = list(
-        "float" = "right",
-        "width" = "30%" ),
-     "a" = list("text-decoration" = "underline"),
-     ".inverse a" = list("color" = "#cbd3a3"),
-     "body" = list("line-height" = "1.4"),
-     ".inverse" = list("background-image" = "url(https://clanfear.github.io/Intro_R_Workshop/img/UWTacomaBG1_white.svg)"),
-     ".title-slide" = list("background-image" = "url(https://clanfear.github.io/Intermediate_R_Workshop/img/UWTacomaBG1_white.svg), url(https://clanfear.github.io/Intermediate_R_Workshop/img/title_slide_img.png)",
-                           "background-position" = "center center, center bottom",
-                           "background-size" = "contain, contain")
-    )
+1. Dividindo e selecionado dados
 
-mono_accent(base_color = "#34a5f4ff",
-            code_font_google = google_font("Fira Mono"),
-            header_font_google = google_font("Quattrocento"),
-            extra_css = csss508css,
-            title_slide_background_position = "bottom",
-            title_slide_background_size = "contain",
-            background_image = "https://raw.githubusercontent.com/arthurwelle/Introducao_R/d8bd652fcf4d34262715905bdc7f133cdf8dd2c6/IMG/quadro3.svg"
-)
-```
+2. Criando Variáveis
 
+3. Agregando dados
 
-# Overview
+4. Tidying dados
 
-1. Subsetting Data
+5. Juntando diferentes bases de dados
 
-2. Creating Variables
-
-3. Summarizing Data
-
-4. Tidying Data
-
-5. Joining Data
-
-6. Resources for Further Learning
+6. Material adicional
 
 ---
 class: inverse
 
-# Setup
+# O que será necessário hoje
 
 ---
-# Packages Used Today
+# Pacotes
 
-This workshop focuses on using packages from the [`tidyverse`](https://www.tidyverse.org/).
-
---
-
-The `tidyverse` is a collection of R packages which share a design philosophy, syntax, and data structures.
+Esta apresentação está baseada inteiramente nos pacotes do [`tidyverse`](https://www.tidyverse.org/).
 
 --
 
-The `tidyverse` includes the most used packages in the R world: [`dplyr`](https://dplyr.tidyverse.org/) and [`ggplot2`](https://ggplot2.tidyverse.org/)
+O `tidyverse` é uma coleção de pacotes de R que compatilham o mesmo design, a mesma sintaxe, e a mesma estrutura.
 
 --
 
-You can install the *entire* `tidyverse` with the following:
+No `tidyverse` se incluem os pacotes mais utilizados no mundo do R: [`dplyr`](https://dplyr.tidyverse.org/) para manipular os dados e [`ggplot2`](https://ggplot2.tidyverse.org/) para visualizar os resultados.
+
+--
+
+Você pode instalar *todos* os pacotes do `tidyverse` de uma vez usando o seguinte comando:
 
 ```{r, eval=FALSE}
 install.packages("tidyverse")
@@ -116,7 +62,7 @@ install.packages("tidyverse")
 
 --
 
-We will also use the `gapminder` and `nycflights13` datasets:
+Usaremos também os pacotes `gapminder` e `nycflights13` que são pacotes contendo dados para alguns de nossos exercícios:
 
 ```{r, eval=FALSE}
 install.packages("gapminder")
@@ -124,126 +70,237 @@ install.packages("nycflights13")
 ```
 
 ---
+# gapminder
+
+Inspecionar o banco de dados gapminder. Quais são suas variáveis?
+
+`head(gapminder)` mostra as primeiras linhas
+
+`colnames(gapminder)` mostra o nome das colunas do objeto gapminder
+
+`glimpse(gapminder)` outra maneira de nos dar uma amostra das variáveis presentes no objeto
+
+`view(gapminder)` abre o banco de dados para inspeção (cuidado ao fazer isso com grandes bancos de dados)
+
+
+```{r}
+glimpse(gapminder)
+```
+
+---
 class: inverse
 
-# Subsetting Data with `dplyr`
+# Pipes `%>%`
 
 
 ---
-# But First, Pipes: `%>%`
+# Pipes `%>%` 
 
-`dplyr` uses the [`magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) forward pipe operator, usually called simply a **pipe**. We write pipes like **`%>%`** (`Ctrl+Shift+M` or `⌘ +Shift+M`).
+O `Tidyverse` (e muitos outros pacotes) usam o operador **pipe** (**`%>%`**) advindo do pacote  [`magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html). 
+
+--
+
+Desde maio de 2021 na versão [`4.1.0`](https://cran.r-project.org/bin/windows/base/NEWS.R-4.1.0.html ) do R  pipe foi implementado no R base, com na forma `|>`, mas como ele tem diferenças para o anterior vamos, por enquanto, preferir `%>%`.
 
 --
 
-Pipes take the object on the *left* and apply the function on the *right*: `x %>% f(y) = f(x, y)`. Read out loud: "and then..."
+O atalho para o `%>%` é `Ctrl+Shift+M` ou `⌘ +Shift+M` no Mac.
 
 --
+
+Pipes pegam os objetos a *esquerda* e aplicam è eles uma função à *direita*: `x %>% f() `. Lê-se "pegue x e então aplique a função f() neste objeto". A tradução lógica para pipe seria "e então..." 
+
+---
+# Pipes `%>%`
+
+Os pipes nos ajudam a fazer o código ser mais legível pois seguem a sequência de passos que intuitivamente esperamos usar para transformar os dados.
+
+--
+
+Com o pipe você pode reescrever isso:
+
+```{r, eval=FALSE}
+corta(assa(mistura(compra(lista_ingredientes))))
+```
+
+desta maneira:
+
+```{r, eval=FALSE}
+lista_ingredientes %>% 
+    compra() %>% 
+    mistura() %>% 
+    assa() %>% 
+    corta()
+```
+
+São logicamente equivalentes mas com o pipe a ordem de leitura segue a ordem cognitiva.
+---
+
+Exemplo abaixo:
+
+  1) crie objeto com 100 números aleatórios **e então...**
+  
+  2) cria a densidade de probabilidade **e então...**
+  
+  3) plota no gráfico o resultado.
+  
+```{r, fig.height=5, fig.width=8}
+rnorm(100) %>% 
+  density() %>% 
+  plot() 
+```
+
+
+---
+Outro exemplo:
+
+  1) Pegue objeto "gapminder", **e então...**
+  
+  2) Selecione somente o Canadá, **e então...**
+  
+  3) Mostre os dois primeiros casos.
 
 ```{r, message=FALSE, warning=FALSE}
 library(dplyr)
 library(gapminder)
-gapminder %>% filter(country == "Canada") %>% head(2)
-```
 
---
-
-Pipes save us typing, make code readable, and allow chaining like above, so we use them *all the time* when manipulating data frames.
-
----
-
-# Using Pipes
-
-
-Pipes are clearest to read when you have each function on a separate line.
-
---
-
-```{r, eval=FALSE}
-take_this_data %>%
-    do_first_thing(with = this_value) %>%
-    do_next_thing(using = that_value) %>% ...
-```
-
---
-
-Stuff to the left of the pipe is passed to the *first argument* of the function on the right. Other arguments go on the right in the function. 
-
---
-
-If you ever find yourself piping a function where data are not the first argument, use `.` in the data argument instead.
-```{r, eval=FALSE}
-gapminder %>% lm(pop ~ year, data = .)
+gapminder %>% 
+  filter(country == "Canada") %>%  
+  head(2)
 ```
 
 ---
 
-# Pipe Assignment
+# Criando um objeto com o pipe
 
-When creating a new object from the output of piped functions, you place the assignment operator *at the beginning*.
+Quando queremos criar um novo objeto com o resultado de uma corrente de pipes podemos usar o operador `<-` no início da corrente, ou `->` no fim da corrente. Abaixo duas formas de criar o objeto chamado **"fatia"** com o resultado da cadeia de ações ou funções.
 
 ```{r, eval=FALSE}
-lm_pop_year <- gapminder %>% 
-  lm(pop ~ year, data = .)
+fatia <- lista_ingredientes %>% 
+    compra() %>% 
+    mistura() %>% 
+    assa() %>% 
+    corta()
 ```
 
-No matter how long the chain of functions is, assignment is always done *at the top*.
+ou
 
+```{r, eval=FALSE}
+lista_ingredientes %>% 
+    compra() %>% 
+    mistura() %>% 
+    assa() %>% 
+    corta() -> fatia
+```
+
+---
+
+# Usando Pipes
+
+O resultado da função aplicada é passada para o *primeiro argumento* da função que vem a seguir. 
+
+--
+
+Caso hava necessidade de passar o resultado do fluxo de pipes para outro argumento que não o primeio basta usar o `.` que serve como marcador para o resultado anterior. Podemos fazer isso também se nomearmos os argumentos que a função usa.
+
+```{r, eval=FALSE}
+fatia <- lista_ingredientes %>% 
+    compra(onde = "supermercado", oque = .) %>% 
+    mistura(ferramenta = "colher", conteudo = .) %>% 
+    assa(onde = "forno", oque = ., temperatura = 90) %>% 
+    corta(tamanho = 2, oque = .)
+```
+
+.footnote[Note que o novo pipe nativo `|>` ainda não utiliza o marcador `.`.]
+
+---
+# Pipes `%>%`
+
+Pipes são ótimos para tornar o código claro e legível. 
+
+--
+
+No entanto, ele não é recomendado uso quando o fluxo de passos não é linear, ou quando estamos gerando multiplos objetos.
+
+---
+class: inverse
+
+# Manipulação de dados 
+
+---
+
+# Os quatro principais "verbos" do dplyr:
+
+### `filter()` 
+
+### `select()` 
+
+### `mutate()`
+
+### `summarize()`
+
+uma "preposição":
+
+### `group_by()`
+
+.smaller[ e outros verbos como `arrange()`, `rename()`]
 ---
 
 # `filter` Data Frames
 
-I used **`filter()`** earlier. We subset *rows* of data using logical conditions with `filter()`!
+**`filter()`** é usado para selecionar um conjunto de **linhas** dentro do banco de dados que satisfazem as condições lógicas dentro da função `filter()`.
 
 ```{r}
-gapminder %>% filter(country == "Oman") %>% head(8)
+gapminder %>% 
+  filter(country == "Oman") %>% 
+  head(8)
 ```
 
-What is this doing?
+O que isto está fazendo?
 
 ---
 
-# Logical Operators
+# Revisão de operadores lógicos
 
-Logical operators test boolean conditions and return `TRUE`, `FALSE`, or `NA`.
-
---
-
-`filter()` returns rows when the condition is `TRUE`.
-
-We used `==` for testing "equals": `country == "Oman"`.
+Operadores lógicos retornam *verdadeiro* (`TRUE`), *falso* (`FALSE`), ou *não disponível* `NA`.
 
 --
 
-There are many other [logical operators](http://www.statmethods.net/management/operators.html):
+`filter()` retorna os valores que atendem a condição, portanto verdadeiros (`TRUE`).
+
+Usamos `==` para testes de igualdade: `country == "Oman"`.
 
 --
 
-* `!=`: not equal to
---
-
-* `>`, `>=`, `<`, `<=`: less than, less than or equal to, etc.
---
-
-* `%in%`: used with checking equal to one of several values
+Outros [operadores lógicos](http://www.statmethods.net/management/operators.html):
 
 --
 
-Or we can combine multiple logical conditions:
-
-* `&`: both conditions need to hold (AND)
+* `!=`: não igual a
 --
 
-* `|`: at least one condition needs to hold (OR)
+* `>`, `>=`, `<`, `<=`: menor que, menor ou igual que, maior que, maior ou igual
 --
 
-* `!`: inverts a logical condition (`TRUE` becomes `FALSE`, `FALSE` becomes `TRUE`)
+* `%in%`: checa se é igual a pelo menos um elemento de um conjunto
+
+--
+
+Operadores usados para combinar outros 
+
+* `&`: ambas as condições tem que ser verdadeiras (**E**)
+--
+
+* `|`: pelo menos uma das condições tem que ser verdadeira (**OU**)
+--
+
+* `!`: negação; inverte o valor do elemento (`TRUE` se torna `FALSE`, `FALSE` se torna `TRUE`)
 
 ---
 
-# Multiple Conditions Example
+# Exemplo de multiplas condições
 
-Let's say we want observations from Oman after 1980 and through 2000.
+Vamos filtrar a base para manter somente Oman entre 1980 e 2000.
 
 --
 
@@ -255,86 +312,98 @@ gapminder %>%
 ```
 
 ---
-# `%in%` Operator
+# `%in%` exemplo de uso
 
-Common use case: Filter rows to things in some *set*.
-
-We can use `%in%` like `==` but for matching *any element* in the vector on its right<sup>1</sup>. 
+Filtrar linhas que tenham algo em comum com qualquer elemento de um conjunto de elementos.
 
 ```{r}
-former_yugoslavia <- c("Bosnia and Herzegovina", "Croatia", #<<
-              "Macedonia", "Montenegro", "Serbia", "Slovenia") #<<
-yugoslavia <- gapminder %>% filter(country %in% former_yugoslavia)
-tail(yugoslavia, 2)
+# criando objeto lista de membros fundadores do Mercosul
+lista_paises_Mercosul <- c(
+            "Brazil", 
+            "Argentina",
+            "Paraguai",
+            "Uruguay") 
+
+# cria nova base com países que estão na lista acima
+mercosul <- gapminder %>%
+  filter(country %in% lista_paises_Mercosul)
+
+# mostra resultado
+mercosul
 ```
 
-.footnote[[1] The `c()` function is how we make **vectors** in R, which are an important data type.]
 
 ---
-## Sorting: `arrange()`
+## Ordenando: `arrange()`
 
-Along with filtering the data to see certain rows, we might want to sort it:
+podemo ordenar os resultados usando `arrange()`
 
 ```{r}
-yugoslavia %>% arrange(year, desc(pop))
+mercosul %>% 
+  arrange(year, -pop)
 ```
 
-The data are sorted by ascending `year` and descending `pop`.
+Ordenados ascendentemente por `year` e descendentemente por `pop`.
 
 ---
-## Keeping Columns: `select()`
+## Selecionando colunas: `select()`
 
-Not only can we subset rows, but we can include specific columns (and put them in the order listed) using **`select()`**. 
+Além de filtrar linhas podemo selecionar as colunas de interesse usando **`select()`**. 
 
 ```{r}
-yugoslavia %>% select(country, year, pop) %>% head(4)
+mercosul %>% 
+  select(country, year, pop) %>% 
+  head(4)
 ```
 
+Note que a ordem das colunas também mudou, seguindo a ordem passada para `select()`.
 ---
-## Dropping Columns: `select()`
+## Removendo colunas: `select()`
 
 
-We can instead drop only specific columns with `select()` using `-` signs:
+Podemos remover as colunas de interesse usando o sinal de menos (`-`) dentro do `select()`. 
 
 ```{r}
-yugoslavia %>% select(-continent, -pop, -lifeExp) %>% head(4)
-```
-
----
-## Helper Functions for `select()`
-
-
-`select()` has a variety of helper functions like `starts_with()`, `ends_with()`, and `contains()`, or can be given a range of continguous columns `startvar:endvar`. See `?select` for details.
-
-These are very useful if you have a "wide" data frame with column names following a pattern or ordering. 
-
-![DYS Data Example](http://clanfear.github.io/CSSS508/Lectures/Week3/img/dys_vars.PNG)
-
-```{r, eval=FALSE}
-DYS %>% select(starts_with("married"))
-DYS %>% select(ends_with("18"))
+mercosul %>% 
+  select(-continent, -pop, -lifeExp) %>% 
+  head(4)
 ```
 
 ---
-## Renaming Columns with `select()`
+## Funções auxiliares para `select()`
 
 
-We can rename columns using `select()`, but that drops everything that isn't mentioned:
+`select()` tem um conjunto de funções auxiliares `starts_with()`, `ends_with()`, e `contains()`, ou ainda podemo usar um intervalo entre duas variáveis/colunas escolhidas `coluna1:coluna4`. Veja detalhes na ajuda da função usando `?select`.
+
+Estas funções auxiliares são particularmente interessantes quando temos um banco de dados com muitas variáveis, ou variáveis com nomes parecidos. 
+
 
 ```{r}
-yugoslavia %>%
+mercosul %>%  
+  select(starts_with("gdp")) %>% 
+  head(4)
+```
+
+---
+## Renomeando colunas com `select()`
+
+
+Podemos renomear as coluans usando `select()`, mas lembre-se que toda colunas não mencionado será removida.
+
+```{r}
+mercosul %>%
     select(Life_Expectancy = lifeExp) %>%
     head(4)
 ```
 
 ---
-### Safer: Rename Columns with `rename()`
+### Renomeando colunas com `rename()`
 
 
-**`rename()`** renames variables using the same syntax as `select()` without dropping unmentioned variables.
+**`rename()`** renomeia colunas com a mesma sintaxe que `select()` sem remover colunas não mencionadas.
 
 ```{r}
-yugoslavia %>%
+mercosul %>%
     select(country, year, lifeExp) %>%
     rename(Life_Expectancy = lifeExp) %>%
     head(4)
@@ -342,154 +411,113 @@ yugoslavia %>%
 
 ---
 class: inverse
-# Creating Variables
+# Criando variáveis
 
 ---
 ## `mutate()`
 
-In `dplyr`, you can add new columns to a data frame using **`mutate()`**.
+No `dplyr`, você pode criar novas colunas/variáveis usando a função **`mutate()`**.
 
 
 ```{r}
-yugoslavia %>% filter(country == "Serbia") %>%
-    select(year, pop, lifeExp) %>%
-    mutate(pop_million = pop / 1000000, #<<
-           life_exp_past_40 = lifeExp - 40) %>% #<<
+mercosul %>% filter(country == "Brazil") %>%
+    select(-continent, -lifeExp) %>%
+    mutate(pop_million = pop / 1000000,
+           GDP = gdpPercap * pop) %>% 
     head(5)
 ```
 
-.footnote[Note you can create multiple variables in a single `mutate()` call by separating the expressions with commas.]
+.footnote[Veja que podemos criar mais de uma variável no mesmo `mutate()` separando cada uma por uma vírgula.]
 
 ---
 # `ifelse()`
 
 
-A common function used in `mutate()` (and in general in R programming) is **`ifelse()`**. It returns a vector of values depending on a logical test.
+Uma função comum usada dentro do`mutate()` é o **`ifelse()`**. Ele retorna um vetor de resultados baseado no resultado de um teste.
 
-```{r, eval=FALSE}
-ifelse(test = x==y, yes = first_value , no = second_value)
+```{r, eval=TRUE}
+x <- 1
+y <- 2
+ifelse(test = x==y, yes = "Verdadeiro" , no = "Falso")
 ```
 
-Output from `ifelse()` if `x==y` is...
-* `TRUE`: `first_value` - the value for `yes =`
-
-* `FALSE`: `second_value` - the value for `no = `
-
-* `NA`: `NA` - because you can't test for NA with an equality!
-
+Como em boa parte das funções se você entregar um vetor de valores ao `ifelse()` ele retorna também um vetor de resultados.  
 --
 
-For example:
+Exemplo:
 
 ```{r}
-example <- c(1, 0, NA, -2)
-ifelse(example > 0, "Positive", "Not Positive")
+vetor_valores <- c(1, 0, NA, -2)
+ifelse(vetor_valores > 0, "Positivo", "Negativo")
 ```
+
+Veja que o teste para `NA` retorna `NA`.
 
 ---
-# `ifelse()` Example
+# `ifelse()` 
 
 
 ```{r}
-yugoslavia %>% mutate(short_country = 
-                 ifelse(country == "Bosnia and Herzegovina", 
-                        "B and H", as.character(country))) %>%
-    select(short_country, year, pop) %>%
-    arrange(year, short_country) %>%
-    head(3)
+mercosul %>% 
+  mutate(apelido = ifelse(country == "Argentina",     # teste
+                          "Hermanos",                 # se verdadeiro
+                          as.character(country))) %>% # se falso
+  select(country, apelido, year, pop) %>%
+  arrange(year, apelido) %>%
+  head(3)
 ```
 
-Read this as "For each row, if country equals 'Bosnia and Herzegovina', make `short_country` equal to 'B and H', otherwise make it equal to that row's value of `country`."
-
-This is a simple way to change some values but not others!
+Em português leia-se "para cada linha, se o país é igual à "Argentina" então faça a nova variável `apelido` ganhar o texto "**Hermanos**", caso contrário o valor da variável `country`. É uma maneira fácil de mudar alguns valores e não outros.
 
 ---
 # `case_when()`
 
-**`case_when()`** performs multiple `ifelse()` operations at the same time. `case_when()` allows you to create a new variable with values based on multiple logical statements. This is useful for making categorical variables or variables from combinations of other variables.
+**`case_when()`** faz multiplas operações `ifelse()` ao mesmo tempo. `case_when()` permite criar uma nova variável baseado em critérios de outras variáveis.
 .smallish[
 ```{r}
-gapminder %>% 
-  mutate(gdpPercap_ordinal = 
+mercosul %>% 
+  mutate(PIB_ranking = 
     case_when(
-      gdpPercap <  700 ~ "low",
-      gdpPercap >= 700 & gdpPercap < 800 ~ "moderate",
-      TRUE ~ "high" )) %>% # Value when all other statements are FALSE
-  slice(6:9) # get rows 6 through 9
+      gdpPercap <  5000 ~ "baixo",
+      gdpPercap >= 5000 & gdpPercap < 7000 ~ "medio",
+      TRUE ~ "alto" )) %>% # se todos os outros casos forem falso
+  head(4)
 ```
 ]
 
 ---
 class: inverse
 
-# Summarizing Data
+# Sumarizando dados
 
 ---
-## General Aggregation: `summarize()`
+## Agregando dados com `summarize()`
 
-**`summarize()`** takes your column(s) of data and computes something using every row: 
+**`summarize()`** recebe uma ou mais colunas dos seus dados e computa algo usando todas as linhas exemplos: 
 
-* Count how many rows there are
-* Calculate the mean
-* Compute the sum
-* Obtain a minimum or maximum value
+* contar quantas linhas tem o banco de dados
+* calcular a média 
+* Computar a soma total dos valores de uma coluna
+* Obter mínimo ou máximo valor
 
-You can use any function in `summarize()` that aggregates *multiple values* into a *single value* (like `sd()`, `mean()`, or `max()`).
+Você pode usar qualquer função dentro de `summarize()` que transforme **multiplos valores** em um **único valor** (como `sd()`, `mean()`, ou `max()`).
 
 
 ---
-# `summarize()` Example
+# `summarize()` exemplo
 
-For the year 1982, let's get the *number of observations*, *total population*, *mean life expectancy*, and *range of life expectancy* for former Yugoslavian countries.
+Para o ano de 2010, vamos calcular o *número de observações*, *população total*, *média expectativa de vida*, and *intervalo da expectativa de vida* dos países do Mercosul.
 
 ```{r}
-yugoslavia %>%
-    filter(year == 1982) %>%
+mercosul %>%
+    filter(year == 2007) %>%
     summarize(n_obs = n(),
               total_pop = sum(pop),
-              mean_life_exp = mean(lifeExp),
-              range_life_exp = max(lifeExp) - min(lifeExp))
+              med_exp_vida = mean(lifeExp),
+              intervalo_exp_vida = max(lifeExp) - min(lifeExp))
 ```
 
-These new variables are calculated using *all of the rows* in `yugoslavia`
-
----
-# Avoiding Repetition: 
-
-### `summarize_at()`
-
-
-Maybe you need to calculate the mean and standard deviation of a bunch of columns. With **`summarize_at()`**, put the variables to compute over first `vars()` (using `select()` syntax) and put the functions to use in `funs()` after.
-
-```{r}
-yugoslavia %>%
-    filter(year == 1982) %>%
-    summarize_at(vars(lifeExp, pop), list(~mean(.), ~sd(.)))
-```
-
-Note it automatically names the summarized variables based on the functions used to summarize.
-
----
-# Avoiding Repetition
-
-### Other functions:
-
-
-There are additional `dplyr` functions similar to `summarize_at()`:
-
-* `summarize_all()` and `mutate_all()` summarize / mutate *all* variables sent to them in the same way. For instance, getting the mean and standard deviation of an entire dataframe:
-
-```{r, eval=FALSE}
-dataframe %>% summarize_all(funs(mean, sd))
-```
-
-* `summarize_if()` and `mutate_if()` summarize / mutate all variables that satisfy some logical condition. For instance, summarizing every numeric column in a dataframe at once:
-
-```{r, eval=FALSE}
-dataframe %>% summarize_if(is.numeric, funs(mean, sd))
-```
-
-You can use all of these to avoid typing out the same code repeatedly!
+As novas variáveis criadas como resultado usaram *todas as linhas* dos dados de `mercosul`.
 
 ---
 # `group_by()`
@@ -506,7 +534,7 @@ Typically the variables you group by will be integers, factors, or characters, a
 
 
 ```{r}
-yugoslavia %>%
+mercosul %>%
   group_by(year) %>% #<<
     summarize(num_countries = n_distinct(country),
               total_pop = sum(pop),
@@ -524,7 +552,7 @@ Each value of year is its own **group**!
 Grouping can also be used with `mutate()` or `filter()` to give rank orders within a group, lagged values, and cumulative sums. You can read more about window functions in this [vignette](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html).
 
 ```{r}
-yugoslavia %>% 
+mercosul %>% 
   select(country, year, pop) %>%
   filter(year >= 2002) %>% 
   group_by(country) %>%
@@ -620,6 +648,19 @@ Each variable is a column.
 Each observation is a row.
 
 Ready to throw into `ggplot()` or a model!
+
+
+Data comes in many formats but R prefers just one: _tidy data_.
+
+A data set is tidy if and only if:
+
+1. Every variable is in its own column
+2. Every observation is in its own row
+3. Every value is in its own cell (which follows from the above)
+
+What is a variable and an observation may depend on your immediate goal.
+
+
 
 ---
 # Billboard Data

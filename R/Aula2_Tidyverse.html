@@ -1,64 +1,61 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Intermediate R</title>
+    <title>Data Science em Gestão de Negócios e Finanças</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Charles Lanfear" />
+    <meta name="author" content="Arthur Welle" />
     <script src="libs/header-attrs/header-attrs.js"></script>
-    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="custom.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
 class: center, top, title-slide
 
-# Intermediate R
-## UW Tacoma
-### Charles Lanfear
-### May 4, 2019<br>Updated: jun 20, 2021
+# Data Science em Gestão de Negócios e Finanças
+## <br>Introdução ao Tidyverse 1
+### Arthur Welle
+### 21 jun, 2021
 
 ---
 
 
 
 
+# Índice
 
+1. Dividindo e selecionado dados
 
+2. Criando Variáveis
 
-# Overview
+3. Agregando dados
 
-1. Subsetting Data
+4. Tidying dados
 
-2. Creating Variables
+5. Juntando diferentes bases de dados
 
-3. Summarizing Data
-
-4. Tidying Data
-
-5. Joining Data
-
-6. Resources for Further Learning
+6. Material adicional
 
 ---
 class: inverse
 
-# Setup
+# O que será necessário hoje
 
 ---
-# Packages Used Today
+# Pacotes
 
-This workshop focuses on using packages from the [`tidyverse`](https://www.tidyverse.org/).
-
---
-
-The `tidyverse` is a collection of R packages which share a design philosophy, syntax, and data structures.
+Esta apresentação está baseada inteiramente nos pacotes do [`tidyverse`](https://www.tidyverse.org/).
 
 --
 
-The `tidyverse` includes the most used packages in the R world: [`dplyr`](https://dplyr.tidyverse.org/) and [`ggplot2`](https://ggplot2.tidyverse.org/)
+O `tidyverse` é uma coleção de pacotes de R que compatilham o mesmo design, a mesma sintaxe, e a mesma estrutura.
 
 --
 
-You can install the *entire* `tidyverse` with the following:
+No `tidyverse` se incluem os pacotes mais utilizados no mundo do R: [`dplyr`](https://dplyr.tidyverse.org/) para manipular os dados e [`ggplot2`](https://ggplot2.tidyverse.org/) para visualizar os resultados.
+
+--
+
+Você pode instalar *todos* os pacotes do `tidyverse` de uma vez usando o seguinte comando:
 
 
 ```r
@@ -67,7 +64,7 @@ install.packages("tidyverse")
 
 --
 
-We will also use the `gapminder` and `nycflights13` datasets:
+Usaremos também os pacotes `gapminder` e `nycflights13` que são pacotes contendo dados para alguns de nossos exercícios:
 
 
 ```r
@@ -76,27 +73,121 @@ install.packages("nycflights13")
 ```
 
 ---
+# gapminder
+
+Inspecionar o banco de dados gapminder. Quais são suas variáveis?
+
+`head(gapminder)` mostra as primeiras linhas
+
+`colnames(gapminder)` mostra o nome das colunas do objeto gapminder
+
+`glimpse(gapminder)` outra maneira de nos dar uma amostra das variáveis presentes no objeto
+
+`view(gapminder)` abre o banco de dados para inspeção (cuidado ao fazer isso com grandes bancos de dados)
+
+
+
+```r
+glimpse(gapminder)
+```
+
+```
+## Rows: 1,704
+## Columns: 6
+## $ country   &lt;fct&gt; "Afghanistan", "Afghanistan", "Afghanistan", "Afghanistan", …
+## $ continent &lt;fct&gt; Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, Asia, …
+## $ year      &lt;int&gt; 1952, 1957, 1962, 1967, 1972, 1977, 1982, 1987, 1992, 1997, …
+## $ lifeExp   &lt;dbl&gt; 28.801, 30.332, 31.997, 34.020, 36.088, 38.438, 39.854, 40.8…
+## $ pop       &lt;int&gt; 8425333, 9240934, 10267083, 11537966, 13079460, 14880372, 12…
+## $ gdpPercap &lt;dbl&gt; 779.4453, 820.8530, 853.1007, 836.1971, 739.9811, 786.1134, …
+```
+
+---
 class: inverse
 
-# Subsetting Data with `dplyr`
+# Pipes `%&gt;%`
 
 
 ---
-# But First, Pipes: `%&gt;%`
+# Pipes `%&gt;%` 
 
-`dplyr` uses the [`magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) forward pipe operator, usually called simply a **pipe**. We write pipes like **`%&gt;%`** (`Ctrl+Shift+M` or `⌘ +Shift+M`).
+O `Tidyverse` (e muitos outros pacotes) usam o operador **pipe** (**`%&gt;%`**) advindo do pacote  [`magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html). 
+
+--
+
+Desde maio de 2021 na versão [`4.1.0`](https://cran.r-project.org/bin/windows/base/NEWS.R-4.1.0.html ) do R  pipe foi implementado no R base, com na forma `|&gt;`, mas como ele tem diferenças para o anterior vamos, por enquanto, preferir `%&gt;%`.
 
 --
 
-Pipes take the object on the *left* and apply the function on the *right*: `x %&gt;% f(y) = f(x, y)`. Read out loud: "and then..."
+O atalho para o `%&gt;%` é `Ctrl+Shift+M` ou `⌘ +Shift+M` no Mac.
 
 --
+
+Pipes pegam os objetos a *esquerda* e aplicam è eles uma função à *direita*: `x %&gt;% f() `. Lê-se "pegue x e então aplique a função f() neste objeto". A tradução lógica para pipe seria "e então..." 
+
+---
+# Pipes `%&gt;%`
+
+Os pipes nos ajudam a fazer o código ser mais legível pois seguem a sequência de passos que intuitivamente esperamos usar para transformar os dados.
+
+--
+
+Com o pipe você pode reescrever isso:
+
+
+```r
+corta(assa(mistura(compra(lista_ingredientes))))
+```
+
+desta maneira:
+
+
+```r
+lista_ingredientes %&gt;% 
+    compra() %&gt;% 
+    mistura() %&gt;% 
+    assa() %&gt;% 
+    corta()
+```
+
+São logicamente equivalentes mas com o pipe a ordem de leitura segue a ordem cognitiva.
+---
+
+Exemplo abaixo:
+
+  1) crie objeto com 100 números aleatórios **e então...**
+  
+  2) cria a densidade de probabilidade **e então...**
+  
+  3) plota no gráfico o resultado.
+  
+
+```r
+rnorm(100) %&gt;% 
+  density() %&gt;% 
+  plot() 
+```
+
+![](Aula2_Tidyverse_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+
+---
+Outro exemplo:
+
+  1) Pegue objeto "gapminder", **e então...**
+  
+  2) Selecione somente o Canadá, **e então...**
+  
+  3) Mostre os dois primeiros casos.
 
 
 ```r
 library(dplyr)
 library(gapminder)
-gapminder %&gt;% filter(country == "Canada") %&gt;% head(2)
+
+gapminder %&gt;% 
+  filter(country == "Canada") %&gt;%  
+  head(2)
 ```
 
 ```
@@ -107,61 +198,95 @@ gapminder %&gt;% filter(country == "Canada") %&gt;% head(2)
 ## 2 Canada  Americas   1957    70.0 17010154    12490.
 ```
 
---
-
-Pipes save us typing, make code readable, and allow chaining like above, so we use them *all the time* when manipulating data frames.
-
 ---
 
-# Using Pipes
+# Criando um objeto com o pipe
 
-
-Pipes are clearest to read when you have each function on a separate line.
-
---
+Quando queremos criar um novo objeto com o resultado de uma corrente de pipes podemos usar o operador `&lt;-` no início da corrente, ou `-&gt;` no fim da corrente. Abaixo duas formas de criar o objeto chamado **"fatia"** com o resultado da cadeia de ações ou funções.
 
 
 ```r
-take_this_data %&gt;%
-    do_first_thing(with = this_value) %&gt;%
-    do_next_thing(using = that_value) %&gt;% ...
+fatia &lt;- lista_ingredientes %&gt;% 
+    compra() %&gt;% 
+    mistura() %&gt;% 
+    assa() %&gt;% 
+    corta()
 ```
 
---
+ou
 
-Stuff to the left of the pipe is passed to the *first argument* of the function on the right. Other arguments go on the right in the function. 
-
---
-
-If you ever find yourself piping a function where data are not the first argument, use `.` in the data argument instead.
 
 ```r
-gapminder %&gt;% lm(pop ~ year, data = .)
+lista_ingredientes %&gt;% 
+    compra() %&gt;% 
+    mistura() %&gt;% 
+    assa() %&gt;% 
+    corta() -&gt; fatia
 ```
 
 ---
 
-# Pipe Assignment
+# Usando Pipes
 
-When creating a new object from the output of piped functions, you place the assignment operator *at the beginning*.
+O resultado da função aplicada é passada para o *primeiro argumento* da função que vem a seguir. 
+
+--
+
+Caso hava necessidade de passar o resultado do fluxo de pipes para outro argumento que não o primeio basta usar o `.` que serve como marcador para o resultado anterior. Podemos fazer isso também se nomearmos os argumentos que a função usa.
 
 
 ```r
-lm_pop_year &lt;- gapminder %&gt;% 
-  lm(pop ~ year, data = .)
+fatia &lt;- lista_ingredientes %&gt;% 
+    compra(onde = "supermercado", oque = .) %&gt;% 
+    mistura(ferramenta = "colher", conteudo = .) %&gt;% 
+    assa(onde = "forno", oque = ., temperatura = 90) %&gt;% 
+    corta(tamanho = 2, oque = .)
 ```
 
-No matter how long the chain of functions is, assignment is always done *at the top*.
+.footnote[Note que o novo pipe nativo `|&gt;` ainda não utiliza o marcador `.`.]
 
+---
+# Pipes `%&gt;%`
+
+Pipes são ótimos para tornar o código claro e legível. 
+
+--
+
+No entanto, ele não é recomendado uso quando o fluxo de passos não é linear, ou quando estamos gerando multiplos objetos.
+
+---
+class: inverse
+
+# Manipulação de dados 
+
+---
+
+# Os quatro principais "verbos" do dplyr:
+
+### `filter()` 
+
+### `select()` 
+
+### `mutate()`
+
+### `summarize()`
+
+uma "preposição":
+
+### `group_by()`
+
+.smaller[ e outros verbos como `arrange()`, `rename()`]
 ---
 
 # `filter` Data Frames
 
-I used **`filter()`** earlier. We subset *rows* of data using logical conditions with `filter()`!
+**`filter()`** é usado para selecionar um conjunto de **linhas** dentro do banco de dados que satisfazem as condições lógicas dentro da função `filter()`.
 
 
 ```r
-gapminder %&gt;% filter(country == "Oman") %&gt;% head(8)
+gapminder %&gt;% 
+  filter(country == "Oman") %&gt;% 
+  head(8)
 ```
 
 ```
@@ -178,51 +303,51 @@ gapminder %&gt;% filter(country == "Oman") %&gt;% head(8)
 ## 8 Oman    Asia       1987    67.7 1593882    18115.
 ```
 
-What is this doing?
+O que isto está fazendo?
 
 ---
 
-# Logical Operators
+# Revisão de operadores lógicos
 
-Logical operators test boolean conditions and return `TRUE`, `FALSE`, or `NA`.
-
---
-
-`filter()` returns rows when the condition is `TRUE`.
-
-We used `==` for testing "equals": `country == "Oman"`.
+Operadores lógicos retornam *verdadeiro* (`TRUE`), *falso* (`FALSE`), ou *não disponível* `NA`.
 
 --
 
-There are many other [logical operators](http://www.statmethods.net/management/operators.html):
+`filter()` retorna os valores que atendem a condição, portanto verdadeiros (`TRUE`).
+
+Usamos `==` para testes de igualdade: `country == "Oman"`.
 
 --
 
-* `!=`: not equal to
---
-
-* `&gt;`, `&gt;=`, `&lt;`, `&lt;=`: less than, less than or equal to, etc.
---
-
-* `%in%`: used with checking equal to one of several values
+Outros [operadores lógicos](http://www.statmethods.net/management/operators.html):
 
 --
 
-Or we can combine multiple logical conditions:
-
-* `&amp;`: both conditions need to hold (AND)
+* `!=`: não igual a
 --
 
-* `|`: at least one condition needs to hold (OR)
+* `&gt;`, `&gt;=`, `&lt;`, `&lt;=`: menor que, menor ou igual que, maior que, maior ou igual
 --
 
-* `!`: inverts a logical condition (`TRUE` becomes `FALSE`, `FALSE` becomes `TRUE`)
+* `%in%`: checa se é igual a pelo menos um elemento de um conjunto
+
+--
+
+Operadores usados para combinar outros 
+
+* `&amp;`: ambas as condições tem que ser verdadeiras (**E**)
+--
+
+* `|`: pelo menos uma das condições tem que ser verdadeira (**OU**)
+--
+
+* `!`: negação; inverte o valor do elemento (`TRUE` se torna `FALSE`, `FALSE` se torna `TRUE`)
 
 ---
 
-# Multiple Conditions Example
+# Exemplo de multiplas condições
 
-Let's say we want observations from Oman after 1980 and through 2000.
+Vamos filtrar a base para manter somente Oman entre 1980 e 2000.
 
 --
 
@@ -245,125 +370,156 @@ gapminder %&gt;%
 ```
 
 ---
-# `%in%` Operator
+# `%in%` exemplo de uso
 
-Common use case: Filter rows to things in some *set*.
-
-We can use `%in%` like `==` but for matching *any element* in the vector on its right&lt;sup&gt;1&lt;/sup&gt;. 
+Filtrar linhas que tenham algo em comum com qualquer elemento de um conjunto de elementos.
 
 
 ```r
-*former_yugoslavia &lt;- c("Bosnia and Herzegovina", "Croatia",
-*             "Macedonia", "Montenegro", "Serbia", "Slovenia")
-yugoslavia &lt;- gapminder %&gt;% filter(country %in% former_yugoslavia)
-tail(yugoslavia, 2)
+# criando objeto lista de membros fundadores do Mercosul
+lista_paises_Mercosul &lt;- c(
+            "Brazil", 
+            "Argentina",
+            "Paraguai",
+            "Uruguay") 
+
+# cria nova base com países que estão na lista acima
+mercosul &lt;- gapminder %&gt;%
+  filter(country %in% lista_paises_Mercosul)
+
+# mostra resultado
+mercosul
 ```
 
 ```
-## # A tibble: 2 x 6
-##   country  continent  year lifeExp     pop gdpPercap
-##   &lt;fct&gt;    &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;   &lt;int&gt;     &lt;dbl&gt;
-## 1 Slovenia Europe     2002    76.7 2011497    20660.
-## 2 Slovenia Europe     2007    77.9 2009245    25768.
+## # A tibble: 36 x 6
+##    country   continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Argentina Americas   1952    62.5 17876956     5911.
+##  2 Argentina Americas   1957    64.4 19610538     6857.
+##  3 Argentina Americas   1962    65.1 21283783     7133.
+##  4 Argentina Americas   1967    65.6 22934225     8053.
+##  5 Argentina Americas   1972    67.1 24779799     9443.
+##  6 Argentina Americas   1977    68.5 26983828    10079.
+##  7 Argentina Americas   1982    69.9 29341374     8998.
+##  8 Argentina Americas   1987    70.8 31620918     9140.
+##  9 Argentina Americas   1992    71.9 33958947     9308.
+## 10 Argentina Americas   1997    73.3 36203463    10967.
+## # … with 26 more rows
 ```
 
-.footnote[[1] The `c()` function is how we make **vectors** in R, which are an important data type.]
 
 ---
-## Sorting: `arrange()`
+## Ordenando: `arrange()`
 
-Along with filtering the data to see certain rows, we might want to sort it:
+podemo ordenar os resultados usando `arrange()`
 
 
 ```r
-yugoslavia %&gt;% arrange(year, desc(pop))
+mercosul %&gt;% 
+  arrange(year, -pop)
 ```
 
 ```
-## # A tibble: 60 x 6
-##    country                continent  year lifeExp     pop gdpPercap
-##    &lt;fct&gt;                  &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;   &lt;int&gt;     &lt;dbl&gt;
-##  1 Serbia                 Europe     1952    58.0 6860147     3581.
-##  2 Croatia                Europe     1952    61.2 3882229     3119.
-##  3 Bosnia and Herzegovina Europe     1952    53.8 2791000      974.
-##  4 Slovenia               Europe     1952    65.6 1489518     4215.
-##  5 Montenegro             Europe     1952    59.2  413834     2648.
-##  6 Serbia                 Europe     1957    61.7 7271135     4981.
-##  7 Croatia                Europe     1957    64.8 3991242     4338.
-##  8 Bosnia and Herzegovina Europe     1957    58.4 3076000     1354.
-##  9 Slovenia               Europe     1957    67.8 1533070     5862.
-## 10 Montenegro             Europe     1957    61.4  442829     3682.
-## # … with 50 more rows
+## # A tibble: 36 x 6
+##    country   continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Brazil    Americas   1952    50.9 56602560     2109.
+##  2 Argentina Americas   1952    62.5 17876956     5911.
+##  3 Uruguay   Americas   1952    66.1  2252965     5717.
+##  4 Brazil    Americas   1957    53.3 65551171     2487.
+##  5 Argentina Americas   1957    64.4 19610538     6857.
+##  6 Uruguay   Americas   1957    67.0  2424959     6151.
+##  7 Brazil    Americas   1962    55.7 76039390     3337.
+##  8 Argentina Americas   1962    65.1 21283783     7133.
+##  9 Uruguay   Americas   1962    68.3  2598466     5603.
+## 10 Brazil    Americas   1967    57.6 88049823     3430.
+## # … with 26 more rows
 ```
 
-The data are sorted by ascending `year` and descending `pop`.
+Ordenados ascendentemente por `year` e descendentemente por `pop`.
 
 ---
-## Keeping Columns: `select()`
+## Selecionando colunas: `select()`
 
-Not only can we subset rows, but we can include specific columns (and put them in the order listed) using **`select()`**. 
+Além de filtrar linhas podemo selecionar as colunas de interesse usando **`select()`**. 
 
 
 ```r
-yugoslavia %&gt;% select(country, year, pop) %&gt;% head(4)
+mercosul %&gt;% 
+  select(country, year, pop) %&gt;% 
+  head(4)
 ```
 
 ```
 ## # A tibble: 4 x 3
-##   country                 year     pop
-##   &lt;fct&gt;                  &lt;int&gt;   &lt;int&gt;
-## 1 Bosnia and Herzegovina  1952 2791000
-## 2 Bosnia and Herzegovina  1957 3076000
-## 3 Bosnia and Herzegovina  1962 3349000
-## 4 Bosnia and Herzegovina  1967 3585000
+##   country    year      pop
+##   &lt;fct&gt;     &lt;int&gt;    &lt;int&gt;
+## 1 Argentina  1952 17876956
+## 2 Argentina  1957 19610538
+## 3 Argentina  1962 21283783
+## 4 Argentina  1967 22934225
 ```
 
+Note que a ordem das colunas também mudou, seguindo a ordem passada para `select()`.
 ---
-## Dropping Columns: `select()`
+## Removendo colunas: `select()`
 
 
-We can instead drop only specific columns with `select()` using `-` signs:
+Podemos remover as colunas de interesse usando o sinal de menos (`-`) dentro do `select()`. 
 
 
 ```r
-yugoslavia %&gt;% select(-continent, -pop, -lifeExp) %&gt;% head(4)
+mercosul %&gt;% 
+  select(-continent, -pop, -lifeExp) %&gt;% 
+  head(4)
 ```
 
 ```
 ## # A tibble: 4 x 3
-##   country                 year gdpPercap
-##   &lt;fct&gt;                  &lt;int&gt;     &lt;dbl&gt;
-## 1 Bosnia and Herzegovina  1952      974.
-## 2 Bosnia and Herzegovina  1957     1354.
-## 3 Bosnia and Herzegovina  1962     1710.
-## 4 Bosnia and Herzegovina  1967     2172.
+##   country    year gdpPercap
+##   &lt;fct&gt;     &lt;int&gt;     &lt;dbl&gt;
+## 1 Argentina  1952     5911.
+## 2 Argentina  1957     6857.
+## 3 Argentina  1962     7133.
+## 4 Argentina  1967     8053.
 ```
 
 ---
-## Helper Functions for `select()`
+## Funções auxiliares para `select()`
 
 
-`select()` has a variety of helper functions like `starts_with()`, `ends_with()`, and `contains()`, or can be given a range of continguous columns `startvar:endvar`. See `?select` for details.
+`select()` tem um conjunto de funções auxiliares `starts_with()`, `ends_with()`, e `contains()`, ou ainda podemo usar um intervalo entre duas variáveis/colunas escolhidas `coluna1:coluna4`. Veja detalhes na ajuda da função usando `?select`.
 
-These are very useful if you have a "wide" data frame with column names following a pattern or ordering. 
+Estas funções auxiliares são particularmente interessantes quando temos um banco de dados com muitas variáveis, ou variáveis com nomes parecidos. 
 
-![DYS Data Example](http://clanfear.github.io/CSSS508/Lectures/Week3/img/dys_vars.PNG)
 
 
 ```r
-DYS %&gt;% select(starts_with("married"))
-DYS %&gt;% select(ends_with("18"))
+mercosul %&gt;%  
+  select(starts_with("gdp")) %&gt;% 
+  head(4)
+```
+
+```
+## # A tibble: 4 x 1
+##   gdpPercap
+##       &lt;dbl&gt;
+## 1     5911.
+## 2     6857.
+## 3     7133.
+## 4     8053.
 ```
 
 ---
-## Renaming Columns with `select()`
+## Renomeando colunas com `select()`
 
 
-We can rename columns using `select()`, but that drops everything that isn't mentioned:
+Podemos renomear as coluans usando `select()`, mas lembre-se que toda colunas não mencionado será removida.
 
 
 ```r
-yugoslavia %&gt;%
+mercosul %&gt;%
     select(Life_Expectancy = lifeExp) %&gt;%
     head(4)
 ```
@@ -372,21 +528,21 @@ yugoslavia %&gt;%
 ## # A tibble: 4 x 1
 ##   Life_Expectancy
 ##             &lt;dbl&gt;
-## 1            53.8
-## 2            58.4
-## 3            61.9
-## 4            64.8
+## 1            62.5
+## 2            64.4
+## 3            65.1
+## 4            65.6
 ```
 
 ---
-### Safer: Rename Columns with `rename()`
+### Renomeando colunas com `rename()`
 
 
-**`rename()`** renames variables using the same syntax as `select()` without dropping unmentioned variables.
+**`rename()`** renomeia colunas com a mesma sintaxe que `select()` sem remover colunas não mencionadas.
 
 
 ```r
-yugoslavia %&gt;%
+mercosul %&gt;%
     select(country, year, lifeExp) %&gt;%
     rename(Life_Expectancy = lifeExp) %&gt;%
     head(4)
@@ -394,173 +550,174 @@ yugoslavia %&gt;%
 
 ```
 ## # A tibble: 4 x 3
-##   country                 year Life_Expectancy
-##   &lt;fct&gt;                  &lt;int&gt;           &lt;dbl&gt;
-## 1 Bosnia and Herzegovina  1952            53.8
-## 2 Bosnia and Herzegovina  1957            58.4
-## 3 Bosnia and Herzegovina  1962            61.9
-## 4 Bosnia and Herzegovina  1967            64.8
+##   country    year Life_Expectancy
+##   &lt;fct&gt;     &lt;int&gt;           &lt;dbl&gt;
+## 1 Argentina  1952            62.5
+## 2 Argentina  1957            64.4
+## 3 Argentina  1962            65.1
+## 4 Argentina  1967            65.6
 ```
 
 ---
 class: inverse
-# Creating Variables
+# Criando variáveis
 
 ---
 ## `mutate()`
 
-In `dplyr`, you can add new columns to a data frame using **`mutate()`**.
+No `dplyr`, você pode criar novas colunas/variáveis usando a função **`mutate()`**.
 
 
 
 ```r
-yugoslavia %&gt;% filter(country == "Serbia") %&gt;%
-    select(year, pop, lifeExp) %&gt;%
-*   mutate(pop_million = pop / 1000000,
-*          life_exp_past_40 = lifeExp - 40) %&gt;%
+mercosul %&gt;% filter(country == "Brazil") %&gt;%
+    select(-continent, -lifeExp) %&gt;%
+    mutate(pop_million = pop / 1000000,
+           GDP = gdpPercap * pop) %&gt;% 
     head(5)
 ```
 
 ```
-## # A tibble: 5 x 5
-##    year     pop lifeExp pop_million life_exp_past_40
-##   &lt;int&gt;   &lt;int&gt;   &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
-## 1  1952 6860147    58.0        6.86             18.0
-## 2  1957 7271135    61.7        7.27             21.7
-## 3  1962 7616060    64.5        7.62             24.5
-## 4  1967 7971222    66.9        7.97             26.9
-## 5  1972 8313288    68.7        8.31             28.7
+## # A tibble: 5 x 6
+##   country  year       pop gdpPercap pop_million           GDP
+##   &lt;fct&gt;   &lt;int&gt;     &lt;int&gt;     &lt;dbl&gt;       &lt;dbl&gt;         &lt;dbl&gt;
+## 1 Brazil   1952  56602560     2109.        56.6 119371649391.
+## 2 Brazil   1957  65551171     2487.        65.6 163049753285.
+## 3 Brazil   1962  76039390     3337.        76.0 253711949067.
+## 4 Brazil   1967  88049823     3430.        88.0 301998949548.
+## 5 Brazil   1972 100840058     4986.       101.  502759433504.
 ```
 
-.footnote[Note you can create multiple variables in a single `mutate()` call by separating the expressions with commas.]
+.footnote[Veja que podemos criar mais de uma variável no mesmo `mutate()` separando cada uma por uma vírgula.]
 
 ---
 # `ifelse()`
 
 
-A common function used in `mutate()` (and in general in R programming) is **`ifelse()`**. It returns a vector of values depending on a logical test.
+Uma função comum usada dentro do`mutate()` é o **`ifelse()`**. Ele retorna um vetor de resultados baseado no resultado de um teste.
 
 
 ```r
-ifelse(test = x==y, yes = first_value , no = second_value)
+x &lt;- 1
+y &lt;- 2
+ifelse(test = x==y, yes = "Verdadeiro" , no = "Falso")
 ```
 
-Output from `ifelse()` if `x==y` is...
-* `TRUE`: `first_value` - the value for `yes =`
+```
+## [1] "Falso"
+```
 
-* `FALSE`: `second_value` - the value for `no = `
-
-* `NA`: `NA` - because you can't test for NA with an equality!
-
+Como em boa parte das funções se você entregar um vetor de valores ao `ifelse()` ele retorna também um vetor de resultados.  
 --
 
-For example:
+Exemplo:
 
 
 ```r
-example &lt;- c(1, 0, NA, -2)
-ifelse(example &gt; 0, "Positive", "Not Positive")
+vetor_valores &lt;- c(1, 0, NA, -2)
+ifelse(vetor_valores &gt; 0, "Positivo", "Negativo")
 ```
 
 ```
-## [1] "Positive"     "Not Positive" NA             "Not Positive"
+## [1] "Positivo" "Negativo" NA         "Negativo"
 ```
+
+Veja que o teste para `NA` retorna `NA`.
 
 ---
-# `ifelse()` Example
+# `ifelse()` 
 
 
 
 ```r
-yugoslavia %&gt;% mutate(short_country = 
-                 ifelse(country == "Bosnia and Herzegovina", 
-                        "B and H", as.character(country))) %&gt;%
-    select(short_country, year, pop) %&gt;%
-    arrange(year, short_country) %&gt;%
-    head(3)
+mercosul %&gt;% 
+  mutate(apelido = ifelse(country == "Argentina",     # teste
+                          "Hermanos",                 # se verdadeiro
+                          as.character(country))) %&gt;% # se falso
+  select(country, apelido, year, pop) %&gt;%
+  arrange(year, apelido) %&gt;%
+  head(3)
 ```
 
 ```
-## # A tibble: 3 x 3
-##   short_country  year     pop
-##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;
-## 1 B and H        1952 2791000
-## 2 Croatia        1952 3882229
-## 3 Montenegro     1952  413834
+## # A tibble: 3 x 4
+##   country   apelido   year      pop
+##   &lt;fct&gt;     &lt;chr&gt;    &lt;int&gt;    &lt;int&gt;
+## 1 Brazil    Brazil    1952 56602560
+## 2 Argentina Hermanos  1952 17876956
+## 3 Uruguay   Uruguay   1952  2252965
 ```
 
-Read this as "For each row, if country equals 'Bosnia and Herzegovina', make `short_country` equal to 'B and H', otherwise make it equal to that row's value of `country`."
-
-This is a simple way to change some values but not others!
+Em português leia-se "para cada linha, se o país é igual à "Argentina" então faça a nova variável `apelido` ganhar o texto "**Hermanos**", caso contrário o valor da variável `country`. É uma maneira fácil de mudar alguns valores e não outros.
 
 ---
 # `case_when()`
 
-**`case_when()`** performs multiple `ifelse()` operations at the same time. `case_when()` allows you to create a new variable with values based on multiple logical statements. This is useful for making categorical variables or variables from combinations of other variables.
+**`case_when()`** faz multiplas operações `ifelse()` ao mesmo tempo. `case_when()` permite criar uma nova variável baseado em critérios de outras variáveis.
 .smallish[
 
 ```r
-gapminder %&gt;% 
-  mutate(gdpPercap_ordinal = 
+mercosul %&gt;% 
+  mutate(PIB_ranking = 
     case_when(
-      gdpPercap &lt;  700 ~ "low",
-      gdpPercap &gt;= 700 &amp; gdpPercap &lt; 800 ~ "moderate",
-      TRUE ~ "high" )) %&gt;% # Value when all other statements are FALSE
-  slice(6:9) # get rows 6 through 9
+      gdpPercap &lt;  5000 ~ "baixo",
+      gdpPercap &gt;= 5000 &amp; gdpPercap &lt; 7000 ~ "medio",
+      TRUE ~ "alto" )) %&gt;% # se todos os outros casos forem falso
+  head(4)
 ```
 
 ```
 ## # A tibble: 4 x 7
-##   country     continent  year lifeExp      pop gdpPercap gdpPercap_ordinal
-##   &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;            
-## 1 Afghanistan Asia       1977    38.4 14880372      786. moderate         
-## 2 Afghanistan Asia       1982    39.9 12881816      978. high             
-## 3 Afghanistan Asia       1987    40.8 13867957      852. high             
-## 4 Afghanistan Asia       1992    41.7 16317921      649. low
+##   country   continent  year lifeExp      pop gdpPercap PIB_ranking
+##   &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;      
+## 1 Argentina Americas   1952    62.5 17876956     5911. medio      
+## 2 Argentina Americas   1957    64.4 19610538     6857. medio      
+## 3 Argentina Americas   1962    65.1 21283783     7133. alto       
+## 4 Argentina Americas   1967    65.6 22934225     8053. alto
 ```
 ]
 
 ---
 class: inverse
 
-# Summarizing Data
+# Sumarizando dados
 
 ---
-## General Aggregation: `summarize()`
+## Agregando dados com `summarize()`
 
-**`summarize()`** takes your column(s) of data and computes something using every row: 
+**`summarize()`** recebe uma ou mais colunas dos seus dados e computa algo usando todas as linhas exemplos: 
 
-* Count how many rows there are
-* Calculate the mean
-* Compute the sum
-* Obtain a minimum or maximum value
+* contar quantas linhas tem o banco de dados
+* calcular a média 
+* Computar a soma total dos valores de uma coluna
+* Obter mínimo ou máximo valor
 
-You can use any function in `summarize()` that aggregates *multiple values* into a *single value* (like `sd()`, `mean()`, or `max()`).
+Você pode usar qualquer função dentro de `summarize()` que transforme **multiplos valores** em um **único valor** (como `sd()`, `mean()`, ou `max()`).
 
 
 ---
-# `summarize()` Example
+# `summarize()` exemplo
 
-For the year 1982, let's get the *number of observations*, *total population*, *mean life expectancy*, and *range of life expectancy* for former Yugoslavian countries.
+Para o ano de 2010, vamos calcular o *número de observações*, *população total*, *média expectativa de vida*, and *intervalo da expectativa de vida* dos países do Mercosul.
 
 
 ```r
-yugoslavia %&gt;%
-    filter(year == 1982) %&gt;%
+mercosul %&gt;%
+    filter(year == 2007) %&gt;%
     summarize(n_obs = n(),
               total_pop = sum(pop),
-              mean_life_exp = mean(lifeExp),
-              range_life_exp = max(lifeExp) - min(lifeExp))
+              med_exp_vida = mean(lifeExp),
+              intervalo_exp_vida = max(lifeExp) - min(lifeExp))
 ```
 
 ```
 ## # A tibble: 1 x 4
-##   n_obs total_pop mean_life_exp range_life_exp
-##   &lt;int&gt;     &lt;int&gt;         &lt;dbl&gt;          &lt;dbl&gt;
-## 1     5  20042685          71.3           3.94
+##   n_obs total_pop med_exp_vida intervalo_exp_vida
+##   &lt;int&gt;     &lt;int&gt;        &lt;dbl&gt;              &lt;dbl&gt;
+## 1     3 233760070         74.7               3.99
 ```
 
-These new variables are calculated using *all of the rows* in `yugoslavia`
+As novas variáveis criadas como resultado usaram *todas as linhas* dos dados de `mercosul`.
 
 ---
 # Avoiding Repetition: 
@@ -572,16 +729,16 @@ Maybe you need to calculate the mean and standard deviation of a bunch of column
 
 
 ```r
-yugoslavia %&gt;%
+mercosul %&gt;%
     filter(year == 1982) %&gt;%
     summarize_at(vars(lifeExp, pop), list(~mean(.), ~sd(.)))
 ```
 
 ```
 ## # A tibble: 1 x 4
-##   lifeExp_mean pop_mean lifeExp_sd   pop_sd
-##          &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
-## 1         71.3  4008537       1.60 3237282.
+##   lifeExp_mean pop_mean lifeExp_sd    pop_sd
+##          &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+## 1         68.0 53752770       4.09 66456757.
 ```
 
 Note it automatically names the summarized variables based on the functions used to summarize.
@@ -626,7 +783,7 @@ Typically the variables you group by will be integers, factors, or characters, a
 
 
 ```r
-yugoslavia %&gt;%
+mercosul %&gt;%
 * group_by(year) %&gt;%
     summarize(num_countries = n_distinct(country),
               total_pop = sum(pop),
@@ -638,11 +795,11 @@ yugoslavia %&gt;%
 ## # A tibble: 5 x 4
 ##    year num_countries total_pop total_gdp_per_cap
 ##   &lt;int&gt;         &lt;int&gt;     &lt;int&gt;             &lt;dbl&gt;
-## 1  1952             5  15436728             3030.
-## 2  1957             5  16314276             4187.
-## 3  1962             5  17099107             5257.
-## 4  1967             5  17878535             6656.
-## 5  1972             5  18579786             8730.
+## 1  1952             3  76732481             3101.
+## 2  1957             3  87586668             3567.
+## 3  1962             3  99921639             4204.
+## 4  1967             3 113732627             4411.
+## 5  1972             3 128449383             5861.
 ```
 
 Because we did `group_by()` with `year` then used `summarize()`, we get *one row per value of `year`*!
@@ -656,7 +813,7 @@ Grouping can also be used with `mutate()` or `filter()` to give rank orders with
 
 
 ```r
-yugoslavia %&gt;% 
+mercosul %&gt;% 
   select(country, year, pop) %&gt;%
   filter(year &gt;= 2002) %&gt;% 
   group_by(country) %&gt;%
@@ -668,12 +825,12 @@ yugoslavia %&gt;%
 ```
 ## # A tibble: 4 x 5
 ## # Groups:   country [2]
-##   country                 year     pop lag_pop pop_chg
-##   &lt;fct&gt;                  &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;
-## 1 Bosnia and Herzegovina  2002 4165416      NA      NA
-## 2 Bosnia and Herzegovina  2007 4552198 4165416  386782
-## 3 Croatia                 2002 4481020      NA      NA
-## 4 Croatia                 2007 4493312 4481020   12292
+##   country    year       pop   lag_pop  pop_chg
+##   &lt;fct&gt;     &lt;int&gt;     &lt;int&gt;     &lt;int&gt;    &lt;int&gt;
+## 1 Argentina  2002  38331121        NA       NA
+## 2 Argentina  2007  40301927  38331121  1970806
+## 3 Brazil     2002 179914212        NA       NA
+## 4 Brazil     2007 190010647 179914212 10096435
 ```
 
 
@@ -763,6 +920,19 @@ Each variable is a column.
 Each observation is a row.
 
 Ready to throw into `ggplot()` or a model!
+
+
+Data comes in many formats but R prefers just one: _tidy data_.
+
+A data set is tidy if and only if:
+
+1. Every variable is in its own column
+2. Every observation is in its own row
+3. Every value is in its own cell (which follows from the above)
+
+What is a variable and an observation may depend on your immediate goal.
+
+
 
 ---
 # Billboard Data
@@ -1288,7 +1458,7 @@ billboard_trajectories &lt;-
 ---
 # Charts of 2000: Beauty!
 
-![](Intermediate_R_presentation_files/figure-html/unnamed-chunk-44-1.svg)&lt;!-- --&gt;
+![](Aula2_Tidyverse_files/figure-html/unnamed-chunk-48-1.svg)&lt;!-- --&gt;
 
 Observation: There appears to be censoring around week 20 for songs falling out of the top 50 that I'd want to follow up on.
 

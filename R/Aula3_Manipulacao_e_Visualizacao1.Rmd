@@ -1,0 +1,65 @@
+---
+title: "Data Science em Gestão de Negócios e Finanças"
+subtitle: "<br>Manipulação de dados e visualização 1" 
+author: "Arthur Welle"
+date: "`r gsub(' 0', ' ', format(Sys.Date(), format='%d %b, %Y'))`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["custom.css"] 
+    nature:
+      highlightStyle: tomorrow-night-bright
+      highlightLines: true
+      countIncrementalSlides: false
+      titleSlideClass: ["center","top"]
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(tidyverse)
+```
+
+
+
+# Índice
+
+1. Porque R?
+
+2. R e RStudio
+
+3. Scripts, Rmardown, pacotes, projetos
+
+4. Caminhos relativos
+
+
+
+5. Breve introdução à programação em R
+
+6. Objetos, classes e funções
+
+---
+class: inverse
+
+# Porque R?
+
+---
+# Porque R?
+
+Esta apresentação está baseada inteiramente nos pacotes do [`tidyverse`](https://www.tidyverse.org/).
+
+--
+
+
+
+--
+
+No `tidyverse` se incluem os pacotes mais utilizados no mundo do R: [`dplyr`](https://dplyr.tidyverse.org/) para manipular os dados e [`ggplot2`](https://ggplot2.tidyverse.org/) para visualizar os resultados.
+
+--
+
+Você pode instalar *todos* os pacotes do `tidyverse` de uma vez usando o seguinte comando:
+
+```{r, eval=FALSE}
+install.packages("tidyverse")
+```
+
