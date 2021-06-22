@@ -720,62 +720,14 @@ mercosul %&gt;%
 As novas variáveis criadas como resultado usaram *todas as linhas* dos dados de `mercosul`.
 
 ---
-# Avoiding Repetition: 
-
-### `summarize_at()`
-
-
-Maybe you need to calculate the mean and standard deviation of a bunch of columns. With **`summarize_at()`**, put the variables to compute over first `vars()` (using `select()` syntax) and put the functions to use in `funs()` after.
-
-
-```r
-mercosul %&gt;%
-    filter(year == 1982) %&gt;%
-    summarize_at(vars(lifeExp, pop), list(~mean(.), ~sd(.)))
-```
-
-```
-## # A tibble: 1 x 4
-##   lifeExp_mean pop_mean lifeExp_sd    pop_sd
-##          &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
-## 1         68.0 53752770       4.09 66456757.
-```
-
-Note it automatically names the summarized variables based on the functions used to summarize.
-
----
-# Avoiding Repetition
-
-### Other functions:
-
-
-There are additional `dplyr` functions similar to `summarize_at()`:
-
-* `summarize_all()` and `mutate_all()` summarize / mutate *all* variables sent to them in the same way. For instance, getting the mean and standard deviation of an entire dataframe:
-
-
-```r
-dataframe %&gt;% summarize_all(funs(mean, sd))
-```
-
-* `summarize_if()` and `mutate_if()` summarize / mutate all variables that satisfy some logical condition. For instance, summarizing every numeric column in a dataframe at once:
-
-
-```r
-dataframe %&gt;% summarize_if(is.numeric, funs(mean, sd))
-```
-
-You can use all of these to avoid typing out the same code repeatedly!
-
----
 # `group_by()`
 
 
-The special function **`group_by()`** changes how subsequent functions operate on the data, most importantly `summarize()`.
+Uma função especial chamada **`group_by()`** muda como as funções subsequentes na cadeia se comportam, especialmente a `summarize()`.
 
-Functions after `group_by()` are computed *within each group* as defined by unique valus of the variables given, rather than over all rows at once.
+Funções depois de um `group_by()` são calculadas **dentro de cada groupo** definidos por um valor comum dentro dada por uma variável, ao invés de todas as linhas conjuntamente.
 
-Typically the variables you group by will be integers, factors, or characters, and *not continuous real values*.
+Geralmente as variaveis que você usará como grupo serão inteiros, factores, ou characteres, e *não variáveis continuas*.
 
 ---
 `group_by()` example
@@ -784,241 +736,172 @@ Typically the variables you group by will be integers, factors, or characters, a
 
 ```r
 mercosul %&gt;%
-* group_by(year) %&gt;%
-    summarize(num_countries = n_distinct(country),
+  group_by(year) %&gt;% 
+    summarize(num_paises = n_distinct(country),
               total_pop = sum(pop),
-              total_gdp_per_cap = sum(pop*gdpPercap)/total_pop) %&gt;%
+              total_pib_per_cap = sum(pop * gdpPercap) / total_pop) %&gt;%
     head(5)
 ```
 
 ```
 ## # A tibble: 5 x 4
-##    year num_countries total_pop total_gdp_per_cap
-##   &lt;int&gt;         &lt;int&gt;     &lt;int&gt;             &lt;dbl&gt;
-## 1  1952             3  76732481             3101.
-## 2  1957             3  87586668             3567.
-## 3  1962             3  99921639             4204.
-## 4  1967             3 113732627             4411.
-## 5  1972             3 128449383             5861.
+##    year num_paises total_pop total_pib_per_cap
+##   &lt;int&gt;      &lt;int&gt;     &lt;int&gt;             &lt;dbl&gt;
+## 1  1952          3  76732481             3101.
+## 2  1957          3  87586668             3567.
+## 3  1962          3  99921639             4204.
+## 4  1967          3 113732627             4411.
+## 5  1972          3 128449383             5861.
 ```
 
-Because we did `group_by()` with `year` then used `summarize()`, we get *one row per value of `year`*!
+Como usamos `group_by()` com `year` e depois o `summarize()`, nós obtivemos *uma linha por valor identificador do grupo, isto é, por ano*!
 
-Each value of year is its own **group**!
+Cada valor distinto da variável ano é seu próprio **grupo**!
 
 ---
-## Window Functions
+## Funções de janela
 
-Grouping can also be used with `mutate()` or `filter()` to give rank orders within a group, lagged values, and cumulative sums. You can read more about window functions in this [vignette](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html).
+Agrupamentos também podem ser usados junto com `mutate()` ou `filter()` para dar ordem dentro de cada grupo, para dar valores anteriores ou posteriores, ou ainda retornar a soma acumulada. Mais informações sobre isso [aqui](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html).
 
+.small[
 
 ```r
 mercosul %&gt;% 
   select(country, year, pop) %&gt;%
-  filter(year &gt;= 2002) %&gt;% 
+  filter(year == 2002 | year == 2007) %&gt;% 
   group_by(country) %&gt;%
   mutate(lag_pop = lag(pop, order_by = year),
-         pop_chg = pop - lag_pop) %&gt;%
-  head(4)
+         var_pop_02_07 = pop - lag_pop,
+         var_percentual_02_07 = (var_pop_02_07 / lag_pop) * 100) %&gt;%
+  filter(!is.na(var_percentual_02_07))
 ```
 
 ```
-## # A tibble: 4 x 5
-## # Groups:   country [2]
-##   country    year       pop   lag_pop  pop_chg
-##   &lt;fct&gt;     &lt;int&gt;     &lt;int&gt;     &lt;int&gt;    &lt;int&gt;
-## 1 Argentina  2002  38331121        NA       NA
-## 2 Argentina  2007  40301927  38331121  1970806
-## 3 Brazil     2002 179914212        NA       NA
-## 4 Brazil     2007 190010647 179914212 10096435
+## # A tibble: 3 x 6
+## # Groups:   country [3]
+##   country    year       pop   lag_pop var_pop_02_07 var_percentual_02_07
+##   &lt;fct&gt;     &lt;int&gt;     &lt;int&gt;     &lt;int&gt;         &lt;int&gt;                &lt;dbl&gt;
+## 1 Argentina  2007  40301927  38331121       1970806                 5.14
+## 2 Brazil     2007 190010647 179914212      10096435                 5.61
+## 3 Uruguay    2007   3447496   3363085         84411                 2.51
 ```
-
+]
 
 ---
 class: inverse
-# Tidying Data
+# *Tidying*  ou arrumação
 
 ---
-# Initial Spot Checks
+# Recordando importação de dados
 
 .smallish[
-First things to check after loading new data:
+Lista de coisas a checar quando importamos dados para o R:
 ]
 --
 
 .smallish[
-* Did the last rows/columns from the original file make it in?
+* Todas as linhas e colunas chegaram no R?
 
-    + May need to use different package or manually specify range
+    + Por exemplo se seus dados estavam em excel talvez precise indicar o range.
 ]
 --
 
 .smallish[
-* Are the column names in good shape?
+* Os nomes das colunas estão bons?
 
-    + Modify a `col_names=` argument or fix with `rename()`
+    + Modifique se necessário com `colnames()` ou com `rename()`
 ]
 --
 .smallish[
 
-* Are there "decorative" blank rows or columns to remove?
+* Há colunas ou linhas em branco?
 
-    + `filter()` or `select()` out those rows/columns
+    + `filter()` ou `select()` para removê-las
 ]
 --
 .smallish[
 
-* How are missing values represented: `NA`, `" "` (blank), `.` (period), `999`?
+* Verique os valores ausentes (*missing*): `NA`, `" "` (branco), `.` (ponto), `999`?
 
-    + Use `mutate()` with `ifelse()` to fix these (perhaps *en masse* with looping)
-]
---
-.smallish[
-
-* Are there character data (e.g. ZIP codes with leading zeroes) being incorrectly represented as numeric or vice versa?
-
-    + Modify `col_types=` argument, or use `mutate()` and `as.numeric()`
+    + Use `mutate()` com `ifelse()`/`case_when()` para arrumar. 
 ]
 
 ---
-# Slightly Messy Data
+# Recordando importação de dados
 
-| **Program**     | **Female** | **Male** |
+.smallish[
+
+* As classes de cada uma das variáveis estão corretas? Pode ocorrer que números estão como texto, por exemplo.
+
+    + Modifique a classe na leitura com o argumento `col_types=`, ou use `mutate()` e uma das funções `as.`
+    
+        + `as.numeric()`;
+        
+        + `as.character()`;
+        
+        + `as.factor)`;
+        
+        +`as.Date()`...
+]
+
+
+---
+# Dados não organizados
+
+| **Curso**     | **Feminino** | **Masculino** |
 |-----------------|-----------:|---------:|
-| Evans School    |     10     |    6    |
-| Arts &amp; Sciences |      5     |    6    |
-| Public Health   |      2     |    3    |
-| Other           |      5     |    1    |
+| Crochet          |     10     |    6    |
+| Origami          |      5     |    6    |
+| Bordado          |      2     |    3    |
+| Outros           |      5     |    1    |
 
 --
 
-* What is an observation?
-    + A group of students from a program of a given gender
-* What are the variables?
-    + Program, Gender, Count
-* What are the values?
-    + Program: Evans School, Arts &amp; Sciences, Public Health, Other
-    + Gender: Female, Male -- **in the column headings, not its own column!**
-    + Count: **spread over two columns!**
+* O que é uma observação?
+    + Um número de estudantes de um dado curso de um dado gênero.
+* Quais são as variáveis
+    + Curso, Gênero, Quantidade
+* Quais são os valores de cada variável?
+    + Curso: Crochet, Origami, Bordado, Outros
+    + Gênero: Feminino, Masculino -- **como nome de coluna e não com uma variável especifica**
+    + Quantidade: **espalhadas em duas colunas**
 
 ---
 # Tidy Version
 
-| **Program**     | **Gender** | **Count** |
+| **Curso**     | **Gênero** | **Quantidade** |
 |-----------------|-----------:|---------:|
-| Evans School    |     Female |    10   |
-| Evans School    |     Male   |    6    |
-| Arts &amp; Sciences |     Female |    5    |
-| Arts &amp; Sciences |     Male   |    6    |
-| Public Health   |     Female |    2    |
-| Public Health   |     Male   |    3    |
-| Other           |     Female |    5    |
-| Other           |     Male   |    1    |
+| Crochet   |     Feminino |    10   |
+| Crochet    |     Masculino   |    6    |
+| Origami |     Feminino |    5    |
+| Origami |     Masculino   |    6    |
+| Bordado  |     Feminino |    2    |
+| Bordado  |     Masculino   |    3    |
+| Outros           |     Feminino |    5    |
+| Outros           |     Masculino   |    1    |
 
-Each variable is a column.
+Cada variável tem sua própria coluna.
 
-Each observation is a row.
-
-Ready to throw into `ggplot()` or a model!
+Cada observação em uma linha.
 
 
-Data comes in many formats but R prefers just one: _tidy data_.
-
-A data set is tidy if and only if:
-
-1. Every variable is in its own column
-2. Every observation is in its own row
-3. Every value is in its own cell (which follows from the above)
-
-What is a variable and an observation may depend on your immediate goal.
-
-
+Dados vem de muitas formas, mas o tidyverse prefere somente um o tidy
 
 ---
-# Billboard Data
 
-We're going to work with some *ugly* data: *The Billboard Hot 100 for the year 2000*.
+Um conjunto de dados é *tidy* se:
 
-We can load it like so:
+1. Cada variável tem sua própria coluna.
+2. Cada observação em sua própria linha.
 
+O que é uma variável e uma observação depende dos seus dados e dos seus objetivos.
 
-```r
-library(readr) # Contains read_csv()
-billboard_2000_raw &lt;- 
-  read_csv(file = "https://github.com/clanfear/Intermediate_R_Workshop/raw/master/data/billboard.csv",
-*          col_types = paste(c("icccD", rep("i", 76)), collapse=""))
-```
+Vantagens:
 
-.footnote[`col_types=` is used to specify column types. [See here for details.](https://clanfear.github.io/CSSS508/Lectures/Week5/CSSS508_week5_data_import_export_cleaning.html#29)]
-
----
-# Billboard is Just Ugly-Messy
-
-.small[
-
-| year |       artist        |          track          | time | date.entered | wk1 | wk2 | wk3 | wk4 | wk5 |
-|:----:|:-------------------:|:-----------------------:|:----:|:------------:|:---:|:---:|:---:|:---:|:---:|
-| 2000 |        2 Pac        | Baby Don't Cry (Keep... | 4:22 |  2000-02-26  | 87  | 82  | 72  | 77  | 87  |
-| 2000 |       2Ge+her       | The Hardest Part Of ... | 3:15 |  2000-09-02  | 91  | 87  | 92  | NA  | NA  |
-| 2000 |    3 Doors Down     |       Kryptonite        | 3:53 |  2000-04-08  | 81  | 70  | 68  | 67  | 66  |
-| 2000 |    3 Doors Down     |          Loser          | 4:24 |  2000-10-21  | 76  | 76  | 72  | 69  | 67  |
-| 2000 |      504 Boyz       |      Wobble Wobble      | 3:35 |  2000-04-15  | 57  | 34  | 25  | 17  | 17  |
-| 2000 |        98^0         | Give Me Just One Nig... | 3:24 |  2000-08-19  | 51  | 39  | 34  | 26  | 26  |
-| 2000 |       A*Teens       |      Dancing Queen      | 3:44 |  2000-07-08  | 97  | 97  | 96  | 95  | 100 |
-| 2000 |       Aaliyah       |      I Don't Wanna      | 4:15 |  2000-01-29  | 84  | 62  | 51  | 41  | 38  |
-| 2000 |       Aaliyah       |        Try Again        | 4:03 |  2000-03-18  | 59  | 53  | 38  | 28  | 21  |
-| 2000 |   Adams, Yolanda    |      Open My Heart      | 5:30 |  2000-08-26  | 76  | 76  | 74  | 69  | 68  |
-| 2000 |    Adkins, Trace    |          More           | 3:05 |  2000-04-29  | 84  | 84  | 75  | 73  | 73  |
-| 2000 | Aguilera, Christina | Come On Over Baby (A... | 3:38 |  2000-08-05  | 57  | 47  | 45  | 29  | 23  |
-]
-
-Week columns continue up to `wk76`!
-
----
-# Billboard
-
-* What are the **observations** in the data?
-
---
-
-    + Week since entering the Billboard Hot 100 per song
---
-
-* What are the **variables** in the data?
---
-
-    + Year, artist, track, song length, date entered Hot 100, week since first entered Hot 100 (**spread over many columns**), rank during week (**spread over many columns**)
---
-
-* What are the **values** in the data?
---
-
-    + e.g. 2000; 3 Doors Down; Kryptonite; 3 minutes 53 seconds; April 8, 2000; Week 3 (**stuck in column headings**); rank 68 (**spread over many columns**)
-
----
-# Tidy Data
-
-**Tidy data** (aka "long data") are such that:
-
---
-
-1. The values for a single observation are in their own row.
---
-
-2. The values for a single variable are in their own column.
---
-
-3. The observations are all of the same nature.
-
---
-
-Why do we want tidy data?
-
-* Easier to understand many rows than many columns
-* Required for plotting in `ggplot2`
-* Required for many types of statistical procedures (e.g. hierarchical or mixed effects models)
-* Fewer confusing variable names
-* Fewer issues with missing values and "imbalanced" repeated measures data
+* É mais fácil de compreender muitas linhas do que muitas colunas.
+* Necessário para o pacote `ggplot2` de visualização.
+* Necessário para muitas outras funções estatísticas (ex. modelos de regressão)
+* Menos nomes de variáveis que podem confundir
 
 ---
 # `tidyr`
@@ -1053,259 +936,16 @@ Let's use `gather()` to get the week and rank variables out of their current lay
 
 ```r
 library(tidyr)
-billboard_2000 &lt;- billboard_2000_raw %&gt;%
-*   gather(key = week, value = rank, starts_with("wk"))
-dim(billboard_2000)
-```
-
-```
-## [1] 24092     7
 ```
 
 `starts_with()` and other helper functions from `dplyr::select()` work here too.
 
 We could instead use: `gather(key = week, value = rank, wk1:wk76)` to pull out these contiguous columns.
 
----
-# `gather`ed Weeks
-
-.smallish[
-
-```r
-head(billboard_2000)
-```
-
-```
-## # A tibble: 6 x 7
-##    year artist       track                   time  date.entered week   rank
-##   &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;                   &lt;chr&gt; &lt;date&gt;       &lt;chr&gt; &lt;int&gt;
-## 1  2000 2 Pac        Baby Don't Cry (Keep... 4:22  2000-02-26   wk1      87
-## 2  2000 2Ge+her      The Hardest Part Of ... 3:15  2000-09-02   wk1      91
-## 3  2000 3 Doors Down Kryptonite              3:53  2000-04-08   wk1      81
-## 4  2000 3 Doors Down Loser                   4:24  2000-10-21   wk1      76
-## 5  2000 504 Boyz     Wobble Wobble           3:35  2000-04-15   wk1      57
-## 6  2000 98^0         Give Me Just One Nig... 3:24  2000-08-19   wk1      51
-```
-]
-
-Now we have a single week column!
-
----
-# Gathering Better?
-
-
-```r
-summary(billboard_2000$rank)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-##    1.00   26.00   51.00   51.05   76.00  100.00   18785
-```
-
-This is an improvement, but we don't want to keep the 18785 rows with missing ranks (i.e. observations for weeks since entering the Hot 100 that the song was no longer on the Hot 100).
-
----
-# Gathering Better: `na.rm`
-
-The argument `na.rm = TRUE` to `gather()` will remove rows with missing ranks.
-
-```r
-billboard_2000 &lt;- billboard_2000_raw %&gt;%
-    gather(key = week, value = rank, starts_with("wk"),
-*          na.rm = TRUE)
-summary(billboard_2000$rank)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##    1.00   26.00   51.00   51.05   76.00  100.00
-```
-
----
-# `separate()`
-
-The track length column isn't analytically friendly. Let's convert it to a number rather than the character (minutes:seconds) format:
-
-
-```r
-billboard_2000 &lt;- billboard_2000 %&gt;%
-    separate(time, into = c("minutes", "seconds"),
-*            sep = ":", convert = TRUE) %&gt;%
-    mutate(length = minutes + seconds / 60) %&gt;%
-    select(-minutes, -seconds)
-summary(billboard_2000$length)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   2.600   3.667   3.933   4.031   4.283   7.833
-```
-
-`sep = :` tells `separate()` to split the column into two where it finds a colon (`:`).
-
-Then we add `seconds / 60` to `minutes` to produce a numeric `length` in minutes.
-
----
-# `parse_number()`
-
-`tidyr` provides a convenience function to grab just the numeric information from a column that mixes text and numbers:
-
-
-```r
-billboard_2000 &lt;- billboard_2000 %&gt;%
-*   mutate(week = parse_number(week))
-summary(billboard_2000$week)
-```
-
-```
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##    1.00    5.00   10.00   11.47   16.00   65.00
-```
-
-For more sophisticated conversion or pattern checking, you'll need to use string parsing (to be covered in week 8).
-
----
-# `spread()` Motivation
-
-`spread()` is the opposite of `gather()`, which you use if you have data for the same observation taking up multiple rows.
-
---
-
-Example of data that we probably want to spread (unless we want to plot each statistic in its own facet):
-
-.small[
-| **Group** | **Statistic** | **Value** |
-|-------|-----------|------:|
-| A     | Mean      |  1.28 |
-| A     | Median    |   1.0 |
-| A     | SD        |  0.72 |
-| B     | Mean      |  2.81 |
-| B     | Median    |     2 |
-| B     | SD        |  1.33 |
-]
-
-A common cue to use `spread()` is having measurements of different quantities in the same column. 
-
----
-# Before `spread()`
-
-.smallish[
-
-```r
-(too_long_data &lt;- data.frame(Group = c(rep("A", 3), rep("B", 3)),
-                             Statistic = rep(c("Mean", "Median", "SD"), 2),
-                             Value = c(1.28, 1.0, 0.72, 2.81, 2, 1.33)))
-```
-
-```
-##   Group Statistic Value
-## 1     A      Mean  1.28
-## 2     A    Median  1.00
-## 3     A        SD  0.72
-## 4     B      Mean  2.81
-## 5     B    Median  2.00
-## 6     B        SD  1.33
-```
-]
-
----
-# After `spread()`
-
-
-```r
-(just_right_data &lt;- too_long_data %&gt;%
-    spread(key = Statistic, value = Value))
-```
-
-```
-##   Group Mean Median   SD
-## 1     A 1.28      1 0.72
-## 2     B 2.81      2 1.33
-```
-
----
-# Charts of 2000: Data Prep
-
-Let's look at songs that hit #1 at some point and look how they got there versus songs that did not:
-
-
-```r
-# find best rank for each song
-best_rank &lt;- billboard_2000 %&gt;%
-    group_by(artist, track) %&gt;%
-*   summarize(min_rank = min(rank),
-              weeks_at_1 = sum(rank == 1)) %&gt;%
-    mutate(`Peak rank` = ifelse(min_rank == 1,
-                                "Hit #1",
-                                "Didn't #1"))
-```
-
-```
-## `summarise()` has grouped output by 'artist'. You can override using the `.groups` argument.
-```
-
-```r
-# merge onto original data
-billboard_2000 &lt;- billboard_2000 %&gt;%
-    left_join(best_rank, by = c("artist", "track"))
-```
-
-.footnote[Note that because the "highest" rank is *numerically lowest* (1), we are summarizing with `min()`.]
-
----
-## Which Were #1 the Most Weeks?
-
-
-```r
-billboard_2000 %&gt;%
-    select(artist, track, weeks_at_1) %&gt;%
-    distinct(artist, track, weeks_at_1) %&gt;%
-    arrange(desc(weeks_at_1)) %&gt;%
-    head(7)
-```
-
-```
-## # A tibble: 7 x 3
-##   artist              track                   weeks_at_1
-##   &lt;chr&gt;               &lt;chr&gt;                        &lt;int&gt;
-## 1 Destiny's Child     Independent Women Pa...         11
-## 2 Santana             Maria, Maria                    10
-## 3 Aguilera, Christina Come On Over Baby (A...          4
-## 4 Madonna             Music                            4
-## 5 Savage Garden       I Knew I Loved You               4
-## 6 Destiny's Child     Say My Name                      3
-## 7 Iglesias, Enrique   Be With You                      3
-```
-
----
-# Getting Usable Dates
-
-We have the date the songs first charted, but not the dates for later weeks. We can calculate these now that the data are tidy:
-
-
-```r
-billboard_2000 &lt;- billboard_2000 %&gt;%
-*   mutate(date = date.entered + (week - 1) * 7)
-billboard_2000 %&gt;% arrange(artist, track, week) %&gt;%
-    select(artist, date.entered, week, date, rank) %&gt;% head(4)
-```
-
-```
-## # A tibble: 4 x 5
-##   artist date.entered  week date        rank
-##   &lt;chr&gt;  &lt;date&gt;       &lt;dbl&gt; &lt;date&gt;     &lt;int&gt;
-## 1 2 Pac  2000-02-26       1 2000-02-26    87
-## 2 2 Pac  2000-02-26       2 2000-03-04    82
-## 3 2 Pac  2000-02-26       3 2000-03-11    72
-## 4 2 Pac  2000-02-26       4 2000-03-18    77
-```
-
-This works because `date` objects are in units of days—we just add 7 days per week to the start date.
 
 ---
 class: inverse
-##Joining Data
+## Joining 
 
 ---
 ## When Do We Need to Join Data?
@@ -1425,52 +1065,15 @@ flights %&gt;% filter(dest == "SEA") %&gt;% select(tailnum) %&gt;%
 
 Note you can perform operations on the data inside functions such as `left_join()` and the *output* will be used by the function.
 
----
-# Visualization Preview
-
-The next workshop will focus on visualization using `ggplot2`.
-
-We could visualize the data we worked with today to understand it better.
 
 ---
-# Charts of 2000: `ggplot2`
+# Recursos adicionais
 
-
-```r
-library(ggplot2)
-billboard_trajectories &lt;- 
-  ggplot(data = billboard_2000,
-         aes(x = week, y = rank, group = track,
-             color = `Peak rank`)
-         ) +
-  geom_line(aes(size = `Peak rank`), alpha = 0.4) +
-    # rescale time: early weeks more important
-  scale_x_log10(breaks = seq(0, 70, 10)) + 
-  scale_y_reverse() + # want rank 1 on top, not bottom
-  theme_classic() +
-  xlab("Week") + ylab("Rank") +
-  scale_color_manual("Peak Rank", values = c("black", "red")) +
-  scale_size_manual("Peak Rank", values = c(0.25, 1)) +
-  theme(legend.position = c(0.90, 0.25),
-        legend.background = element_rect(fill="transparent"))
-```
-
----
-# Charts of 2000: Beauty!
-
-![](Aula2_Tidyverse_files/figure-html/unnamed-chunk-48-1.svg)&lt;!-- --&gt;
-
-Observation: There appears to be censoring around week 20 for songs falling out of the top 50 that I'd want to follow up on.
-
----
-# Resources
-
-   * [UW CSSS508](https://clanfear.github.io/CSSS508/): My University of Washington Introduction to R course which forms the basis for this workshop. All content including lecture videos is freely available.
    * [R for Data Science](http://r4ds.had.co.nz/) online textbook by Garrett Grolemund and Hadley Wickham. One of many good R texts available, but importantly it is free and focuses on the [`tidyverse`](http://tidyverse.org/) collection of R packages which are the modern standard for data manipulation and visualization in R.
    * [Advanced R](http://adv-r.had.co.nz/) online textbook by Hadley Wickham. A great source for more in-depth and advanced R programming.
    * [DataCamp](https://www.datacamp.com/): A source for interactive R tutorials (some free of charge).
-   * [`swirl`](http://swirlstats.com/students.html): Interactive tutorials inside R.
    * [Useful RStudio cheatsheets](https://www.rstudio.com/resources/cheatsheets/) on R Markdown, RStudio shortcuts, etc.
+   * [UW CSSS508](https://clanfear.github.io/CSSS508/): My University of Washington Introduction to R course which forms the basis for this workshop. All content including lecture videos is freely available.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
